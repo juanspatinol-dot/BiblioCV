@@ -2,14 +2,167 @@
 {
     border-radius: 30px;
     box-shadow: 0 0 40px #0005;
-    width: 90%;
+    width: 85%;
     margin: 0 auto;
+    padding: 15px;
     display: grid;
-    grid-template-columns: repeat(3, 1 fr);
-    grid-template-rows: repeat(2, minmax(100px, 200px));
+    grid-template-columns: repeat(2, 1 fr);
+    grid-template-rows: 90px 1fr;
 }
 
-.abt-us__title
+.content__abt-us
 {
-    grid-row: span 2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.abt-card__img, .abt-card__parra
+{
+    padding: 15px;
+}
+
+.abt-card__img
+{
+    max-width: 15%;
+    object-fit: cover;
+}
+
+.space__parra
+{
+    padding: 10px 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 100%;
+}
+
+.abt-card__parra
+{
+    margin: 0;
+    text-align: left;
+}
+
+.content__mv
+{
+    width: 88%;
+    margin: 0 auto;
+    padding: 30px;
+    display: flex;
+    gap: 100px;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+}
+
+.mv__card
+{
+    max-width: 800px;
+    flex: 1 0 400px;
+    border-radius: 30px;
+    box-shadow: 0 0 40px #0005;
+    width: 40%;
+    padding: 15px;
+    display: grid;
+    grid-template-columns: repeat(2, 1 fr);
+    grid-template-rows: 50px 1fr;
+    align-items: center;
+}
+
+.content__mv-card
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.mv-card__img
+{
+    width: 25%;
+    object-fit: cover;
+}
+
+.content__crea
+{
+    width: 85%;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-evenly;
+    gap: 50px;
+    padding: 30px;
+}
+
+.crea__card
+{
+    flex: 0 1 380px;
+    display: flex;
+    flex-direction: column;
+    justify-items: center;
+    box-shadow: 0 0 40px #0005;
+    border-radius: 30px;
+    padding: 50px 50px;
+}
+
+.crea-card__img
+{
+    width: 100%;
+    object-fit: cover;
+    object-position: center;
+    margin: auto;
+    border-radius: 50%;
+    box-shadow: 0 0 40px #0005;
+    transition: 0.2s;
+}
+
+.crea-card__img:hover
+{
+    transform: translateY(-8px);
+}
+
+.ubi__card
+{   
+    position: relative;
+    width: 95%;
+    height: 650px;
+    border-radius: 30px;
+    box-shadow: 0 0 60px #0005;
+    padding: 30px;
+    margin: 0 auto;
+    z-index: 1;
+}
+
+.ubi__img
+{
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 60px;
+    padding: 30px;
+    z-index: 10;
+}
+
+.ubi__list
+{
+    position: relative;
+    z-index: 20;
+    padding: 100px 50px;
+    background: linear-gradient(to right, #f0f0f0 50%, transparent);
+    width: 60%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
+
+.ubi__item
+{
+    list-style-type: none;
+    font-size: 1.15rem;
+}
+
+.ubi__item strong
+{
+    font-size: 1.35rem;
 }
