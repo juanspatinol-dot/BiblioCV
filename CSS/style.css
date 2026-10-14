@@ -1,0 +1,226 @@
+*,*::after,*::before
+{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Poppins;
+    scroll-behavior: smooth;
+}
+
+h1
+{ 
+    width: 0;
+    height: 0;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+}
+
+h1,h2,h3,h4
+{
+    text-wrap: balance;
+    color: #333;
+    font-weight: bolder;
+    text-align: center;
+    margin: 25px;
+}
+
+h2
+{
+    font-size: 2rem;
+}
+
+h3
+{
+    font-size: 1.5rem;
+}
+
+p
+{
+    color: #333;
+    text-wrap: pretty;
+    text-align: center;
+    margin: 15px;
+}
+
+body
+{
+    background-color: #f0f0f0;
+    display: flex;
+    flex-direction: column;
+}
+
+.hero__img
+{
+    width: 100%;
+    max-height: 650px;
+    position: relative;
+    z-index: 1;
+}
+
+.hero__navbar
+{
+    position: fixed;
+    top: 0;
+    max-height: 70px;
+    padding: 20px;
+    width: 100%;
+    display: flex;
+    gap: 40px;
+    align-items: center;
+    z-index: 1000;
+    background: linear-gradient(to bottom, #000, #0006,  transparent );
+    transition: 0.2s;
+}
+
+.hero__navbar.scrolled
+{
+    background: linear-gradient(transparent);
+    background-color: #333;
+    box-shadow: 0 0 60px #000;
+}
+
+.navbar__logo
+{
+    max-width: 100px;
+}
+
+.navbar__list
+{
+    width: 92%;
+    display: flex;
+    gap: 40px;
+    justify-content: space-between;
+}
+
+.side--item
+{
+    display: flex;
+    gap: 40px;
+}
+
+.navbar__item
+{
+    list-style: none;
+}
+
+.navbar__link
+{
+    color: #f0f0f0;
+    font-weight: bold;
+    text-decoration: none;
+    padding: 8px 30px;
+    border-radius: 25px;
+    transition: 0.45s;
+}
+
+.hero__navbar.scrolled .navbar__link
+{
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+.link--btn
+{
+    color: #333;
+    background-color: #f0f0f0;
+}
+
+.hero__navbar.scrolled .link--btn
+{
+    background-color: #16b85d;
+}
+
+.navbar__link:hover
+{
+    color: #aaa;
+}
+
+.hero__navbar.scrolled .navbar__link:hover
+{
+    color: #f0f0f0;
+    background-color: #333;
+}
+
+.link--btn:hover
+{
+    color: #f0f0f0;
+    background-color: #333;
+}
+
+
+section
+{
+    margin: 62px auto;
+    width: 100%;
+}
+
+footer
+{   
+    color: #f0f0f0;
+    padding: 20px;
+    background-color: #333;
+    display: grid;
+    grid-template-areas: 
+    "ints faq help"
+    "copy copy copy"
+    ;
+    grid-template-columns: repeat(3, 1fr);
+    justify-items: center;
+}
+
+.ints
+{
+    grid-area: ints;
+}
+
+.ints .ftcontent__title
+{
+    text-align: left;
+}
+
+.faq
+{
+    grid-area: faq;
+}
+
+.help
+{
+    grid-area: help;
+}
+
+.ftcontent__title
+{
+    font-weight: bold;
+    color: #f0f0f0;
+    margin-top: 30px;
+    margin-bottom: 80px;
+}
+
+.ftcontent__item
+{
+    padding: 0;
+    list-style: none;
+    margin: 24px auto;
+}
+
+.ftcontent__link
+{
+    color: #f0f0f0;
+    text-decoration: none;
+}
+
+.ftcontent__link:hover
+{
+    text-decoration: underline;
+}
+
+.footer__copy
+{
+    margin-top: 50px;
+    grid-area: copy;
+    color: #f0f0f0;
+    opacity: 0.7;
+}
+
