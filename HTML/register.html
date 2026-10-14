@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../CSS/style.css">
+    <link rel="stylesheet" href="../CSS/register.css">
     <script src="../JS/narbar.js"></script>
     <title>BiblioCV - Registrarse</title>
 </head>
@@ -26,27 +27,27 @@
         <div class="content">
             <form class="register">
                 <div class="register__area">
-                    <label for="regsiter-name" class="register__title">Nombre* </label>
+                    <label for="regsiter-name" class="register__title">Nombre*</label>
                     <input id="register-name" type="text" required class="register__input" placeholder="Ejem: Juan Zapata Torres">
                 </div>
                 <div class="register__area">
-                    <label for="regsiter-email">Correo* </label>
+                    <label for="regsiter-email" class="register__title">Correo*</label>
                     <input id="register-email" type="email" required class="register__input" placeholder="Ejem: juan@dominio">
                 </div>
                 <div class="register__area">
-                    <label for="register-date">Fecha de nacimiento* </label>
-                    <input id="register-date" type="date" required>
+                    <label for="register-date" class="register__title">Fecha de nacimiento*</label>
+                    <input id="register-date" type="date" required class="register__input">
                 </div>
                 <div class="register__area">
-                    <label for="register-passw">Contraseña*</label>
+                    <label for="register-passw" class="register__title">Contraseña*</label>
                     <input id="register-passw" type="password" required minlength="8" class="register__input">
                 </div>
                 <div class="register__area">
-                    <label for="register-cpassw">Confirmar contraseña*</label>
+                    <label for="register-cpassw" class="register__title">Confirmar contraseña*</label>
                     <input id="register-cpassw" type="password" required minlength="8" class="register__input">
                 </div>
                 <div class="register__area">
-                    <label for="register-cargo">Cargo*</label>
+                    <label for="register-cargo" class="register__title">Cargo*</label>
                     <select name="cargo" id="register-cargo" class="register__input input--select" required>
                         <option value="" hidden>¿Cuál va a ser tu cargo?</option>
                         <option value="Estudent">Estudiante</option>
@@ -55,7 +56,7 @@
                     </select>
                 </div>
                 <div class="register__area">
-                    <label for="register-jornada">Jornada*</label>
+                    <label for="register-jornada" class="register__title">Jornada*</label>
                     <select name="jornada" id="register-jornada" class="register__input input--select" required>
                         <option value="" hidden>¿Cuál es tu jornada?</option>
                         <option value="Estudent">Primaria</option>
@@ -63,10 +64,10 @@
                     </select>
                 </div>
 
-                <input type="submit" value="Registrarse">
+                <input type="submit" value="Registrarse" class="register__sumbit">
 
                 <hr class="login-side">
-                <p class="login__parra">¿Ya tenías una cuenta? Dale click <a href="login.html" class="register__link">aquí</a></p>
+                <p class="login__parra">¿Ya tenías una cuenta? Dale click <a href="login.html" class="login__link">aquí</a></p>
             </form>
         </div>
     </main>
