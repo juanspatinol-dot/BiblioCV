@@ -112,7 +112,7 @@ body
     text-decoration: none;
     padding: 8px 30px;
     border-radius: 25px;
-    transition: 0.45s;
+    transition: 0.35s;
 }
 
 .hero__navbar.scrolled .navbar__link

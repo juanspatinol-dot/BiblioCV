@@ -15,6 +15,7 @@
     width: 80%;
     border: 1px solid #333;
     border-radius: 50px;
+    transition: 0.2s;
 }
 
 .search-bar__img
@@ -22,17 +23,24 @@
     width: 5%;
     object-fit: contain;
     padding-right: 0;
-    padding: 5px;
+    padding: 10px;
 }
 
 .search-bar__input
 {
-    width: 90%;
-    border: none;
-    border-left: 1px solid #333;    
+    width: 100%;
+    border-radius: 30px;
+    border: none;  
     outline: none;
     background-color: transparent;
     padding: 15px;
+    font-size: 1.1rem;
+}
+
+.search__bar:hover
+{
+    box-shadow: 0 0 20px #0005;
+    transform: scale(1.005);
 }
 
 .search-bar__input::placeholder
@@ -42,14 +50,189 @@
 
 .order__faq
 {
+    margin: auto;
+    width: 85%;
     display: grid;
-    gap: 30px;
+    gap: 50px;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 1fr 1fr;
+    justify-content: space-evenly;
     justify-items: center;
 }
 
 .faq__card
 {
-    
+    width: 100%;
+    padding: 30px;
+    border-radius: 30px;
+    box-shadow: 0 0 40px #0005;
+}
+
+.faq__card-hero
+{
+    display: flex;
+    align-items: center;
+}
+
+.faq__img
+{
+    width: 150px;
+    padding: 30px;
+    order: -1;
+}
+
+.faq-deta__title
+{
+    list-style: none;
+    display: flex;
+    font-size: 1.3rem;
+    color: #333;
+    margin-top: 15px;
+    justify-content: space-between;
+    cursor: pointer;
+}
+
+.faq-deta__title::after
+{
+    content: "+";
+    color: #16b85d;
+}
+
+.faq__deta[open] .faq-deta__title::after
+{
+    content: "-";
+}
+
+.faq-deta__parra
+{
+    text-align: start;
+    color: #3338;
+    font-size: 1.1rem;
+}
+
+.support__card
+{
+    border-radius: 30px;
+    box-shadow: 0 0 40px #0005;
+    width: 30%;
+    padding: 30px;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.support__title, .support__parra
+{
+    margin: 0;
+}
+
+.support__btn
+{
+    margin: auto;
+    width: 35%;
+    color: #333;
+    background-color: #16b85d;              
+    padding: 10px 30px;
+    border: none;
+    border-radius: 25px;
+    font-weight: bold;
+    text-decoration: none;
+    transition: 0.25s;
+}
+
+.support__btn:hover
+{
+    cursor: pointer;
+    color: #f0f0f0;
+    background-color: #333;
+    transform: scale(1.05);
+}
+
+.support__modal::backdrop
+{
+    background-color: #0008;
+}
+
+.support__modal
+{
+    width: 60%;
+    border: none;
+    border-radius: 30px;
+    background-color: #f0f0f0;
+    margin: auto;
+    padding: 45px;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.modal__form
+{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.modal-form__area
+{
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+}
+
+.modal-form__input
+{
+    flex-grow: 1;
+    width: 100%;
+    margin: 20px auto;
+    border: 1px solid #333;
+    background-color: #f0f0f0;
+    padding: 15px 20px;
+    border-radius: 30px;
+    transition: 0.2s;
+}
+
+.form--textarea
+{
+    min-width: 100%;
+    max-width: 100%;
+    min-height: 300px;
+    max-height: 300px;
+}
+
+.modal__form-sumbit
+{
+    width: 30%;
+    margin: auto;
+    border: none;
+    padding: 15px 20px;
+    border-radius: 30px;
+    background-color: #16b85d;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.modal__form-sumbit:hover
+{
+    transform: scale(1.05);
+    background-color: #333;
+    color: #f0f0f0;
+}
+
+.modal__close
+{  
+    background-color: #333;
+    padding: 12px;
+    color: #f0f0f0;
+    border: none;
+    border-radius: 25px;
+    transition: 0.3s;
+}
+
+.modal__close:hover
+{
+    cursor: pointer;
+    transform: scale(1.05);
 }
