@@ -164,6 +164,7 @@
     padding: 45px;
     justify-content: center;
     overflow: hidden;
+    overflow-y: scroll;
 }
 
 .modal__form
