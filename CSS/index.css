@@ -212,11 +212,13 @@
         flex-direction: column;
         gap: 30px;
         align-items: center;
+        align-content: center;
     }
 
     .advens__card
     {
         width: 60%;
         flex: 0 1 00px;
+        align-items: center;
     }
 }
