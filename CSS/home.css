@@ -4,15 +4,14 @@
     margin: 20px auto;
     display: grid;
     grid-template-columns: 1fr 1fr minmax(150px, 1fr);
-    grid-template-rows: 150px 3fr;
+    grid-template-rows: minmax(80px, 1fr) 4fr;
     gap: 30px;
 }
 
 main, .aside-club, .main__navbar
 {
     padding: 30px;
-    background-color: #f0f0f0;
-    border-radius: 5px;
+    border-radius: 30px;
     box-shadow: 0px 0px 30px #0005;
 }
 
@@ -23,5 +22,12 @@ main
 
 .main__navbar
 {
-    grid-column: span 3 ;
+    grid-column: span 3;
+    background-color: #16b85d;
+}
+
+.navbar__main-form
+{
+    display: flex;
+    justify-content: space-between;
 }

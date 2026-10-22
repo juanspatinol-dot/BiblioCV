@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../CSS/style.css">
     <link rel="stylesheet" href="../CSS/home.css">
-    <script src="../JS/narbar.js"></script>
+    <script src="../JS/navbar.js"></script>
     <title>BiblioCV</title>
 </head>
 <body>
@@ -26,7 +26,24 @@
     
     <div class="main-wrapped">
         <nav class="main__navbar">
-            <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Illo, cupiditate, ex quis ipsum dolore ea sed quae numquam, enim nobis unde laudantium atque voluptates a quaerat qui officiis modi? Blanditiis.</p>
+            <div class="navbar__main-contenedor">
+                <form class="navbar__main-form">
+                    <input type="search" class="navbar__main-input main--search" placeholder="Busca un libro">
+                    <a href="#perfil" class="navbar__main-input btn--search">Puntos: 0000</a>
+                    <div class="navbar__main-input btn--search">
+                        <label for="orderby" class="btn--search">Ordenar por:</label>
+                        <select id="orderby">
+                            <option value="" hidden>Pon un filtro</option>
+                            <option value="Author">Autor</option>
+                            <option value="Name">De la A a la Z</option>
+                            <option value="Namereve">De la Z a la A</option>
+                            <option value="Able">Disponibilidad</option>
+                            <option value="year">Año</option>
+                            <option value="storage">Cantidad</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
         </nav>
 
         <main>
