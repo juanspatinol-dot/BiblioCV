@@ -1,18 +1,22 @@
 .main-wrapped
 {
-    max-width: 90%;
+    min-width: 90%;
     margin: 20px auto;
     display: grid;
-    grid-template-columns: 1fr 1fr minmax(150px, 1fr);
-    grid-template-rows: minmax(80px, 1fr) 4fr;
+    grid-template-columns: 1fr 1fr 400px;
+    grid-template-rows: minmax(80px, 0.55fr) 6fr;
     gap: 30px;
 }
 
-main, .aside-club, .main__navbar
+main, .aside-utility, .main__navbar
 {
     padding: 30px;
     border-radius: 30px;
-    box-shadow: 0px 0px 30px #0005;
+}
+
+main, .aside-utility
+{
+    padding-top: 10px;
 }
 
 main
@@ -24,10 +28,184 @@ main
 {
     grid-column: span 3;
     background-color: #16b85d;
+    display: flex;
+    align-items: center;
+}
+
+.navbar__main-contenedor
+{
+    flex-grow: 1;
 }
 
 .navbar__main-form
 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    justify-items: space-between;
+    align-content: center;
+}
+
+.navbar__main-label
+{
+    font-size: 1.3rem;
+    margin-right: 5px;
+    color: #3339;
+}
+
+.navbar__main-input
+{
+    padding: 15px 40px;
+    background-color: #f0f0f0;
+    border: 1px solid #333;
+    border-radius: 30px;
+}
+
+.input--select
+{
+    cursor: pointer;
+}
+
+.btn--search
+{
+    text-align: start;
+    padding-left: 10px;
+}
+
+.input--link
+{
+    text-decoration: none;
+    text-align: center;
+    color: #3339;
+    width: 40%;
+    justify-self: center;
+    transition: 0.2s;
+}
+
+.input--link:hover
+{
+    transform: scale(1.05);
+}
+
+.navbar__main-select
+{
+    justify-self: end;
     display: flex;
+    align-items: center;
+}
+
+.main__title
+{
+    text-align: start;
+}
+
+.main__banner_gen
+{  
+    width: 100%;
+    padding: 30px;
+}
+
+.sect__hero
+{  
+    width: 100%;
+    padding: 20px;
+    border-radius: 30px;
+    background-color: #16b85d;
+}
+
+.banner__title
+{
+    text-align: start;
+}
+
+.aside__title, .main__title
+{
+    margin-bottom: 5px;
+}
+
+.sect__body
+{
+    display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
+    padding: 30px 0;
+}
+
+.book
+{
+    flex: 0 1 250px;
+    justify-content: center;
+    align-content: center;
+}
+
+.book__img
+{
+    flex-grow: 1;
+    width: 100%;
+    object-fit: cover;
+    border-radius: 30px;
+    box-shadow: 0 0 40px #0005;
+}
+
+.cata__link
+{
+    text-decoration: none;
+    color: #333;
+}
+
+.cata__link:hover
+{
+    text-decoration: underline;
+}
+
+.nav__list-item
+{
+    list-style-type: none;
+    margin: 20px 0;
+    transition: 0.3s;
+}
+
+.nav__list-item:hover
+{
+    transform: scale(1.02);
+}
+
+.nav__list-link
+{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #333;
+    text-decoration: none;
+}
+
+.nav__list-link:hover
+{
+    text-decoration: underline;
+}
+
+.content__link-img
+{
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    border: 2px solid #333;
+    border-radius: 50%;
+    width: 70px;
+    height: 70px;
+}
+
+.link__img
+{
+    border-radius: 0%;
+    padding: 4px;
+    width: 80%;
+    object-fit: contain;
+}
+
+@media screen and (max-width: 1950px)
+{
+    .book:first-child
+    {
+        display: none;
+    }
 }
