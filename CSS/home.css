@@ -1,11 +1,18 @@
 .main-wrapped
 {
     min-width: 90%;
-    margin: 20px auto;
+    margin: 12px auto;
     display: grid;
     grid-template-columns: 1fr 1fr 400px;
-    grid-template-rows: minmax(80px, 0.55fr) 6fr;
+    grid-template-rows: 100px minmax(80px, 0.53fr) 6fr;
     gap: 30px;
+}
+
+.title
+{
+    grid-column: span 3;
+    justify-self: center;
+    align-self: center;
 }
 
 main, .aside-utility, .main__navbar
