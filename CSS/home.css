@@ -3,9 +3,10 @@
     min-width: 90%;
     margin: 12px auto;
     display: grid;
-    grid-template-columns: 1fr 1fr 400px;
-    grid-template-rows: 100px minmax(80px, 0.53fr) 6fr;
+    grid-template-columns: 1fr 1fr 380px;
+    grid-template-rows: 100px 150px 6fr;
     gap: 30px;
+    align-items: baseline;
 }
 
 .title
@@ -114,7 +115,7 @@ main
 .sect__hero
 {  
     width: 100%;
-    padding: 20px;
+    padding: 4px;
     border-radius: 30px;
     background-color: #16b85d;
 }
@@ -124,7 +125,7 @@ main
     text-align: start;
 }
 
-.aside__title, .main__title
+.aside__title, .main__title, .filter__title
 {
     margin-bottom: 5px;
 }

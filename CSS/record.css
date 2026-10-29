@@ -1,0 +1,124 @@
+.wrap-main
+{
+    min-width: 90%;
+    margin: 12px auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr minmax(200px, 280px);
+    grid-template-rows: 100px 150px 6fr;
+    gap: 30px;
+    align-items: baseline;
+}
+
+.main__hero
+{
+    display: flex;
+    justify-content: space-between;
+}
+
+.main__form
+{
+    display: flex;
+    gap: 40px;
+}
+
+.main__btn
+{
+    border: none;
+    width: 60px;
+}
+
+.main__btn-img
+{
+    width: 80%;
+    object-fit: contain;
+    transition: 0.3s ease;
+    cursor: pointer;
+}
+
+.main__btn-img:hover
+{
+    
+    transform: scale(1.1);
+}
+
+.main__body
+{
+    padding: 30px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-auto-rows: minmax(300px, 1fr);
+    gap: 50px;
+    justify-content: space-between;
+    justify-items: center;
+    align-items: center;
+    align-content: space-between;
+}
+
+.book
+{
+    width: 200px;
+    height: 100%;
+    box-shadow: 0 0 20px #0005;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+.main__banner
+{
+    width: 100%;
+    height: 100%;
+    background-color: #16b85d;
+    grid-column: span 4;
+}
+
+.check__filter
+{
+    width: 90%;
+    margin: auto;
+    border: none;
+    border-top: 1px solid #333;
+    padding: 30px 10px;
+}
+
+.check__form, .check__filter
+{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.check__filter:first-child
+{
+    border: none;
+    margin-top: 30px;
+}
+
+.check__title
+{
+    padding: 8px 14px;
+    text-align: center;
+    font-size: 1.2rem;
+}
+
+.check__content
+{
+    display: flex;
+    gap: 10px;
+    flex-direction: row-reverse;
+    justify-content: start;
+    align-content: center;
+}
+
+.check__cb-title
+{
+    font-size: 1.1rem;
+    color: #3339;
+    cursor: pointer;
+}
+
+input[type="checkbox"]
+{
+    cursor: pointer;
+    border-radius: 5px;
+    width: 50px;
+}
