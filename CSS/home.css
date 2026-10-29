@@ -237,7 +237,7 @@ main
     }
 }
 
-@media screen and (max-width: 900px)
+@media screen and (min-width: 1200px)
 {
     .sect__body
     {

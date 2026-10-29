@@ -146,3 +146,23 @@ input[type="checkbox"]
         width: 150px;
     }
 }
+
+@media screen and (min-width: 1200px)
+{
+    
+    .main__banner
+    {
+        grid-column: span 3;
+    }
+
+    .main__body
+    {
+        grid-template-columns: repeat(auto-fill, 180px);
+        grid-auto-rows: 200px;
+    }
+
+    .book
+    {
+        width: 150px;
+    }
+}
