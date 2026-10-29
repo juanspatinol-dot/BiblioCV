@@ -70,7 +70,7 @@
     padding: 30px 10px;
     background-color: #16b85d;
     box-shadow: 0 0 20px #0005;
-    grid-column: span 4;
+    grid-column: span 6;
     border-radius: 30px;
     display: flex;
     align-items: center;
@@ -128,8 +128,13 @@ input[type="checkbox"]
     width: 50px;
 }
 
-@media screen and (min-width: 1000px)
+@media screen and (max-width: 2000px)
 {
+    .main__banner
+    {
+        grid-column: span 5;
+    }
+
     .main__body
     {
         grid-template-columns: repeat(auto-fill, 180px);
