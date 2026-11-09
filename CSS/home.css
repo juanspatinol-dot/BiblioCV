@@ -242,11 +242,11 @@ main
     .sect__body
     {
         grid-template-columns: repeat(4, 200px);
-        grid-auto-rows: 250px;
+        grid-auto-rows: 300px;
     }
 
     .book
     {
-        width: 150px;
+        width: 100%;
     }
 }
