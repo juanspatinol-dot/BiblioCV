@@ -27,25 +27,12 @@
         <div class="content">
             <form class="login">
                 <div class="login__area">
-                    <label for="login-name" class="login__title">Nombre* </label>
-                    <input id="login-name" type="text" required class="login__input" placeholder="Ejem: Juan Zapata Torres">
-                </div>
-                <div class="login__area">
                     <label for="login-email" class="login__title">Correo* </label>
                     <input id="login-email" type="email" required class="login__input" placeholder="Ejem: juan@dominio">
                 </div>
                 <div class="login__area">
                     <label for="login-passw" class="login__title">Contraseña* </label>
                     <input id="login-passw" type="password" required minlength="8" class="login__input">
-                </div>
-                <div class="login__area">
-                    <label for="login-cargo" class="login__title">Cargo* </label>
-                    <select name="cargo" id="login-cargo" class="login__input cargo__input" required>
-                        <option value="" hidden>¿Cuál va a ser tu cargo?</option>
-                        <option value="Estudent">Estudiante</option>
-                        <option value="Supervisor">Supervisor</option>
-                        <option value="Admin">Administrador</option>
-                    </select>
                 </div>
 
                 <input type="submit" value="Iniciar" class="login__sumbit">
@@ -100,5 +87,7 @@
         <p class="footer__copy">Copyright © 2025-2026 BiblioCV todos los derechos preservados.</p>
 
     </footer>
+
+    <script src="../JS/login.js"></script>
 </body>
 </html>

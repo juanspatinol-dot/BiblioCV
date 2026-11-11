@@ -18,7 +18,7 @@
             <a href="index.html"><img src="../Assets/Logotipo.png" alt="Logo de BiblioCV" class="navbar__logo"></a>
             <ul class="navbar__list">
                 <li class="navbar__item"><a href="https://www.iecampovaldes.edu.co/" class="navbar__link">Colegio</a></li>
-                <li class="navbar__item"><a href="login.html" class="navbar__link link--btn">Inicar Sesion</a></li>
+                <li class="navbar__item"><a href="login.html" class="navbar__link link--btn">Iniciar Sesión</a></li>
             </ul>
         </nav>
     </header>
@@ -31,8 +31,16 @@
                     <input id="register-name" type="text" required class="register__input" placeholder="Ejem: Juan Zapata Torres">
                 </div>
                 <div class="register__area">
+                    <label for="regsiter-id" class="register__title">Documento de identidad*</label>
+                    <input id="register-id" type="number" required class="register__input" placeholder="Ejem: 1234567890">
+                </div>
+                <div class="register__area">
                     <label for="regsiter-email" class="register__title">Correo*</label>
                     <input id="register-email" type="email" required class="register__input" placeholder="Ejem: juan@dominio">
+                </div>
+                <div class="register__area">
+                    <label for="regsiter-phone" class="register__title">Teléfono*</label>
+                    <input id="register-phone" type="number" required class="register__input" placeholder="Ejem: 3001234567">
                 </div>
                 <div class="register__area">
                     <label for="register-date" class="register__title">Fecha de nacimiento*</label>
@@ -50,17 +58,17 @@
                     <label for="register-cargo" class="register__title">Cargo*</label>
                     <select name="cargo" id="register-cargo" class="register__input input--select" required>
                         <option value="" hidden>¿Cuál va a ser tu cargo?</option>
-                        <option value="Estudent">Estudiante</option>
-                        <option value="Supervisor">Supervisor</option>
-                        <option value="Admin">Administrador</option>
+                        <option value="student">Estudiante</option>
+                        <option value="supervisor">Supervisor</option>
+                        <option value="admin">Administrador</option>
                     </select>
                 </div>
                 <div class="register__area">
                     <label for="register-jornada" class="register__title">Jornada*</label>
                     <select name="jornada" id="register-jornada" class="register__input input--select" required>
                         <option value="" hidden>¿Cuál es tu jornada?</option>
-                        <option value="Estudent">Primaria</option>
-                        <option value="Supervisor">Secundaria</option>
+                        <option value="morning">Primaria</option>
+                        <option value="afternoon">Secundaria</option>
                     </select>
                 </div>
 
@@ -110,5 +118,6 @@
         <p class="footer__copy">Copyright © 2025-2026 BiblioCV todos los derechos preservados.</p>
 
     </footer>
+    <script src="../JS/register.js"></script>
 </body>
 </html>
