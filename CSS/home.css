@@ -152,16 +152,11 @@ main
 
 .book
 {
-    width: 30%;
-    min-height: 300px;
+    width: 20%;
+    min-height: 320px;
     border-radius: 30px;
     padding: 10px;
     box-shadow: 0 0 40px #0005;
-}
-
-.book__img
-{
-    
 }
 
 .cata__link
@@ -220,10 +215,3 @@ main
     object-fit: contain;
 }
 
-@media screen and (min-width: 1200px)
-{
-    .book:first-child, .book:last-child
-    {
-        display: none;
-    }
-}
