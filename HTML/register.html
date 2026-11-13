@@ -31,6 +31,10 @@
                     <input id="register-name" type="text" required class="register__input" placeholder="Ejem: Juan Zapata Torres">
                 </div>
                 <div class="register__area">
+                    <label for="regsiter-nick" class="register__title">Apodo*</label>
+                    <input id="register-nick" type="text" required class="register__input" placeholder="Ejem: Juan" maxlength="6">
+                </div>
+                <div class="register__area">
                     <label for="regsiter-id" class="register__title">Documento de identidad*</label>
                     <input id="register-id" type="number" required class="register__input" placeholder="Ejem: 1234567890">
                 </div>
@@ -53,15 +57,6 @@
                 <div class="register__area">
                     <label for="register-cpassw" class="register__title">Confirmar contraseña*</label>
                     <input id="register-cpassw" type="password" required minlength="8" class="register__input">
-                </div>
-                <div class="register__area">
-                    <label for="register-cargo" class="register__title">Cargo*</label>
-                    <select name="cargo" id="register-cargo" class="register__input input--select" required>
-                        <option value="" hidden>¿Cuál va a ser tu cargo?</option>
-                        <option value="student">Estudiante</option>
-                        <option value="supervisor">Supervisor</option>
-                        <option value="admin">Administrador</option>
-                    </select>
                 </div>
                 <div class="register__area">
                     <label for="register-jornada" class="register__title">Jornada*</label>

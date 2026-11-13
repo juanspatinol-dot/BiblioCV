@@ -60,6 +60,17 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    transition: 0.2s;
+}
+
+.book__rate-content:hover
+{
+    transform: scale(1.12);
+}
+
+.book__rate-content:active
+{
+    transform: scale(0.95);
 }
 
 .rate__icon
