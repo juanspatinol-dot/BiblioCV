@@ -102,6 +102,35 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
+// 1. Ruta que ya tenías para obtener TODOS los libros
+app.get('/api/books', (req, res) => {
+    const query = 'SELECT * FROM books';
+    db.query(query, (err, results) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ error: "Error al obtener los libros." });
+        }
+        res.status(200).json(results);
+    });
+});
+
+// 2. NUEVA ruta para obtener UN SOLO libro por su ID (para el preview)
+app.get('/api/books/:id', (req, res) => {
+    const bookId = req.params.id;
+    const query = 'SELECT * FROM books WHERE cod_book = ?';
+    
+    db.query(query, [bookId], (err, results) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ error: "Error al obtener el libro." });
+        }
+        if (results.length === 0) {
+            return res.status(404).json({ error: "Libro no encontrado." });
+        }
+        res.status(200).json(results[0]); // Devuelve el objeto del libro individual
+    });
+});
+
 // ==========================================
 // INICIAR SERVIDOR
 // ==========================================
