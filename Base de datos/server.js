@@ -1,15 +1,11 @@
 const express = require('express');
-const mysql = require('mysql2');
-const bcrypt = require('bcrypt');
 const cors = require('cors');
+const mysql = require('mysql2');
 
 const app = express();
-
-// Middlewares
 app.use(express.json());
 app.use(cors());
 
-// Conexión a la base de datos MySQL
 const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
@@ -22,87 +18,107 @@ db.connect((err) => {
         console.error('Error al conectar a la base de datos:', err);
         return;
     }
-    console.log('¡Conectado exitosamente a la base de datos MySQL!');
+    console.log('Conectado exitosamente a la base de datos MySQL.');
 });
 
 // ==========================================
-// RUTA DE REGISTRO
+// RUTA DE REGISTRO (Actualizada con dirección)
 // ==========================================
-app.post('/api/register', async (req, res) => {
-    const { idUser, name, nick, email, phone, birthDate, password, jornada } = req.body;
-    const role = 'student'; // Rol por defecto
+app.post('/api/register', (req, res) => {
+    const { idUser, name, nick, email, phone, birthDate, password, jornada, address, description } = req.body;
 
-    try {
-        const saltRounds = 10;
-        const passw_hash = await bcrypt.hash(password, saltRounds);
+    // Si no mandan descripción, usamos la frase por defecto que pediste
+    const descrUser = description && description.trim() !== '' 
+        ? description 
+        : `Hola soy ${name} y soy miembro de BiblioCV`;
 
-        const query = `INSERT INTO users (ID_user, name_user, nickname_user, email_user, born_date, passw_hash, phone_user, type_user, role_user) 
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+    const query = `
+        INSERT INTO users (ID_user, name_user, nickname_user, email_user, born_date, passw_hash, phone_user, type_user, adress_user, role_user, descr_user) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'student', ?)
+    `;
 
-        db.query(query, [idUser, name, nick, email, birthDate, passw_hash, phone, jornada, role], (err, result) => {
-            if (err) {
-                console.error(err);
-                return res.status(500).json({ error: "El documento, apodo o correo ya están registrados." });
+    db.query(query, [idUser, name, nick, email, birthDate, password, phone, jornada, address, descrUser], (err, result) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ error: "El documento, apodo o correo ya están registrados." });
+        }
+        
+        res.status(200).json({ 
+            message: "Registro exitoso",
+            user: {
+                idUser,
+                name,
+                nick,
+                email,
+                phone,
+                birthDate,
+                jornada,
+                address,
+                description: descrUser
             }
-            // Devolvemos el nick para mostrarlo en el alert de éxito
-            res.status(201).json({ 
-                message: "¡Usuario registrado con éxito!",
-                nick: nick 
-            });
         });
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Error en el servidor al procesar el registro." });
-    }
+    });
 });
 
 // ==========================================
 // RUTA DE LOGIN
 // ==========================================
-app.post('/api/login', async (req, res) => {
+app.post('/api/login', (req, res) => {
     const { email, password } = req.body;
 
-    try {
-        const query = 'SELECT * FROM users WHERE email_user = ?';
-        db.query(query, [email], async (err, results) => {
-            if (err) {
-                console.error(err);
-                return res.status(500).json({ error: "Error en el servidor al intentar iniciar sesión." });
+    const query = 'SELECT * FROM users WHERE email_user = ? AND passw_hash = ?';
+
+    db.query(query, [email, password], (err, results) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ error: "Error en el servidor durante el login." });
+        }
+
+        if (results.length === 0) {
+            return res.status(401).json({ error: "Correo o contraseña incorrectos." });
+        }
+
+        const user = results[0];
+
+        res.status(200).json({
+            message: "Login exitoso",
+            user: {
+                ID_user: user.ID_user,
+                nickname_user: user.nickname_user,
+                name_user: user.name_user,
+                email_user: user.email_user,
+                phone_user: user.phone_user,
+                born_date: user.born_date,
+                adress_user: user.adress_user,
+                type_user: user.type_user,
+                descr_user: user.descr_user // <--- Importante para que viaje la descripción
             }
-
-            if (results.length === 0) {
-                return res.status(401).json({ error: "Correo o contraseña incorrectos." });
-            }
-
-            const user = results[0];
-
-            const passwordMatch = await bcrypt.compare(password, user.passw_hash);
-
-            if (!passwordMatch) {
-                return res.status(401).json({ error: "Correo o contraseña incorrectos." });
-            }
-
-            // Devolvemos el nickname_user en el objeto del usuario
-            res.status(200).json({ 
-                message: "¡Inicio de sesión exitoso!",
-                user: {
-                    id: user.ID_user,
-                    name: user.name_user,
-                    nickname: user.nickname_user,
-                    email: user.email_user,
-                    role: user.role_user
-                }
-            });
         });
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Error interno en el servidor." });
-    }
+    });
 });
 
-// 1. Ruta que ya tenías para obtener TODOS los libros
+// ==========================================
+// RUTA PARA OBTENER DATOS DEL PERFIL POR NICKNAME
+// ==========================================
+app.get('/api/users/:nick', (req, res) => {
+    const userNick = req.params.nick;
+    const query = 'SELECT * FROM users WHERE nickname_user = ?';
+    
+    db.query(query, [userNick], (err, results) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ error: "Error en el servidor al buscar el usuario." });
+        }
+        if (results.length === 0) {
+            return res.status(404).json({ error: "Usuario no encontrado." });
+        }
+        res.status(200).json(results[0]);
+    });
+});
+
+// ==========================================
+// RUTA PARA OBTENER LOS LIBROS
+// ==========================================
 app.get('/api/books', (req, res) => {
     const query = 'SELECT * FROM books';
     db.query(query, (err, results) => {
@@ -114,27 +130,6 @@ app.get('/api/books', (req, res) => {
     });
 });
 
-// 2. NUEVA ruta para obtener UN SOLO libro por su ID (para el preview)
-app.get('/api/books/:id', (req, res) => {
-    const bookId = req.params.id;
-    const query = 'SELECT * FROM books WHERE cod_book = ?';
-    
-    db.query(query, [bookId], (err, results) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).json({ error: "Error al obtener el libro." });
-        }
-        if (results.length === 0) {
-            return res.status(404).json({ error: "Libro no encontrado." });
-        }
-        res.status(200).json(results[0]); // Devuelve el objeto del libro individual
-    });
-});
-
-// ==========================================
-// INICIAR SERVIDOR
-// ==========================================
-const PORT = 3000;
-app.listen(PORT, () => {
-    console.log(`Servidor corriendo en http://localhost:${PORT}`);
+app.listen(3000, () => {
+    console.log('Servidor corriendo en http://localhost:3000');
 });

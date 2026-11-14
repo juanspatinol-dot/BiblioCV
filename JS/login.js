@@ -1,12 +1,12 @@
-const loginForm = document.querySelector('.login'); // Asegúrate de que coincida con el selector de tu formulario de login en HTML
+const loginForm = document.querySelector('.login'); 
 
 if (loginForm) {
     loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        // Capturamos el correo y la contraseña desde los inputs del login
-        const email = document.getElementById('login-email').value; // O el ID real de tu input de correo
-        const password = document.getElementById('login-passw').value; // O el ID real de tu input de contraseña
+        // Capturamos el correo y la contraseña desde los inputs
+        const email = document.getElementById('login-email').value.trim();
+        const password = document.getElementById('login-passw').value;
 
         try {
             const respuesta = await fetch('http://localhost:3000/api/login', {
@@ -18,16 +18,22 @@ if (loginForm) {
             const resultado = await respuesta.json();
 
             if (respuesta.ok) {
-                // ¡Aquí saludamos usando el apodo (nickname) que devuelve el backend!
-                alert(`¡Bienvenido de nuevo, ${resultado.user.nickname}!`);
+                alert(`¡Bienvenido de nuevo, ${resultado.user.nickname_user}!`);
                 
-                // Opcional: guardamos el nickname en localStorage por si lo quieres usar luego en el home
-                localStorage.setItem('userNick', resultado.user.nickname);
+                localStorage.setItem('userNick', resultado.user.nickname_user);
+                localStorage.setItem('userName', resultado.user.name_user);
+                localStorage.setItem('userEmail', resultado.user.email_user);
+                localStorage.setItem('userPhone', resultado.user.phone_user || '');
+                localStorage.setItem('userAddress', resultado.user.adress_user || '');
+                localStorage.setItem('userDescription', resultado.user.descr_user || ''); // <--- Guardar descripción
+                
+                const userJornada = resultado.user.type_user || 'morning';
+                localStorage.setItem('userShift', userJornada.toLowerCase().trim());
                 
                 loginForm.reset();
-                window.location.href = 'home.html'; 
+                window.location.href = 'home.html';
             } else {
-                alert('Error: ' + resultado.error);
+                alert('Error: ' + (resultado.error || 'Credenciales incorrectas'));
             }
         } catch (error) {
             console.error('Error de conexión:', error);

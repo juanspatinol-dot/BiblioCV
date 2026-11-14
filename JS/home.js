@@ -7,6 +7,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
+    // Obtener la jornada del usuario almacenada
+    const userShift = localStorage.getItem('userShift') ? localStorage.getItem('userShift').toLowerCase().trim() : '';
+
     // 2. MOSTRAR APODO EN EL BIENVENIDO
     const welcomeTitle = document.querySelector('.main-wrapped .title');
     if (welcomeTitle) {
@@ -20,9 +23,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         const books = await respuesta.json();
 
-        // Agrupar los libros por su género
+        // Filtrar por jornada (si es afternoon, se ocultan los exclusivos de morning)
+        const validBooks = books.filter(book => {
+            const bookType = book.type_book ? book.type_book.toLowerCase().trim() : '';
+            if (userShift === 'afternoon' && bookType === 'morning') {
+                return false;
+            }
+            return true;
+        });
+
+        // Agrupar los libros válidos por su género (máximo 5 por sección)
         const booksByGenre = {};
-        books.forEach(book => {
+        validBooks.forEach(book => {
             const genre = book.genre_book || 'General';
             if (!booksByGenre[genre]) {
                 booksByGenre[genre] = [];
@@ -50,7 +62,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                     const bookDiv = document.createElement('div');
                     bookDiv.classList.add('book');
 
-                    // Tarjeta individual limpia (sin duplicaciones)
                     bookDiv.innerHTML = `
                         <a href="preview.html?id=${book.cod_book}" class="book__link" style="display: flex; flex-direction: column; align-items: center; text-decoration: none; color: inherit; height: 100%;">
                             <img src="${book.imgurl_book || '../Assets/Portadas/HarryPotter.jpg'}" alt="${book.name_book}" style="width: 80%; height: 70%; object-fit: contain; border-radius: 10px; margin-bottom: 5px;">
@@ -69,22 +80,21 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         });
 
+        // 4. Funcionalidad de la barra de búsqueda en el Home
+        const homeSearchInput = document.querySelector('.navbar__main-input.btn--search');
+        if (homeSearchInput) {
+            homeSearchInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const query = homeSearchInput.value.trim();
+                    if (query) {
+                        window.location.href = `catalog.html?search=${encodeURIComponent(query)}`;
+                    }
+                }
+            });
+        }
+
     } catch (error) {
         console.error('Error al cargar los libros dinámicos:', error);
     }
 });
-
-// Funcionalidad de la barra de búsqueda en el Home
-const homeSearchInput = document.querySelector('.navbar__main-input.btn--search');
-if (homeSearchInput) {
-    homeSearchInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            const query = homeSearchInput.value.trim();
-            if (query) {
-                // Redirige al catálogo pasando lo que escribió el usuario en la URL
-                window.location.href = `catalog.html?search=${encodeURIComponent(query)}`;
-            }
-        }
-    });
-}

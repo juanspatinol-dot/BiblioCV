@@ -110,6 +110,7 @@
 {
     font-size: 1.1rem;
     color: #3339;
+    transition: 0.1s;
     cursor: pointer;
 }
 
@@ -118,4 +119,10 @@ input[type="checkbox"]
     cursor: pointer;
     border-radius: 5px;
     width: 50px;
+}
+
+.check__content:has(input[type="checkbox"]:checked) .check__cb-title
+{
+    color: #333;
+    font-weight: bold;
 }

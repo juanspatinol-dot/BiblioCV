@@ -1,6 +1,6 @@
 .main-wrapped
 {
-    min-width: 90%;
+    min-width: 10%;
     margin: 12px auto;
     display: grid;
     grid-template-columns: 1fr 1fr 380px;

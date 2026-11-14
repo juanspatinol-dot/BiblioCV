@@ -75,3 +75,11 @@
     padding: 5px 10px;
     font-weight: bold;
 }
+
+@media screen and (max-width: 800px)
+{
+    .content
+    {
+        width: 90%;
+    }
+}

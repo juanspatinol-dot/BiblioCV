@@ -102,3 +102,21 @@
     color: #f0f0f0;
     text-align: center; 
 }
+
+@media screen and (max-width: 800px)
+{
+    .content
+    {
+        width: 90%;
+    }
+
+    .login
+    {
+        width: 100%;
+    }
+
+    .content__img
+    {
+        display: none;
+    }
+}

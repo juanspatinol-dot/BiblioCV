@@ -7,6 +7,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
+    // Obtener la jornada del usuario almacenada ('morning' o 'afternoon')
+    const userShift = localStorage.getItem('userShift') ? localStorage.getItem('userShift').toLowerCase().trim() : '';
+
     const flexboxContainer = document.querySelector('.flexbox');
     const searchInput = document.querySelector('.navbar__main-input.btn--search');
     if (!flexboxContainer) return;
@@ -18,7 +21,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         flexboxContainer.innerHTML = '';
 
         if (booksToRender.length === 0) {
-            flexboxContainer.innerHTML = '<p style="grid-column: span 4; text-align: center;">No se encontraron libros con esos filtros.</p>';
+            flexboxContainer.innerHTML = '<p style="grid-column: span 4; text-align: center;">No se encontraron libros disponibles para tu jornada con esos filtros.</p>';
             return;
         }
 
@@ -36,7 +39,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     };
 
-    // Función para aplicar los filtros (Buscador + Checkboxes de Género)
+    // Función para aplicar los filtros (Jornada + Buscador + Checkboxes de Género)
     const filterBooks = () => {
         const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
         
@@ -44,7 +47,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         const selectedGenres = [];
         const genreCheckboxes = document.querySelectorAll('.check__filter input[type="checkbox"]');
         
-        // Mapeo rápido de los IDs de los checkboxes con los nombres de géneros en la BD
         const genreMap = {
             'horror': 'Terror',
             'action': 'Acción',
@@ -62,14 +64,21 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         });
 
-        // Filtrar la lista completa de libros
+        // Filtrar la lista completa
         let filtered = allBooks.filter(book => {
+            // 1. REGLA DE JORNADA (type_book): 
+            // Si el usuario es afternoon, no ve los exclusivos de morning. Si es morning, ve todo.
+            const bookType = book.type_book ? book.type_book.toLowerCase().trim() : '';
+            if (userShift === 'afternoon' && bookType === 'morning') {
+                return false;
+            }
+
+            // 2. Búsqueda por texto (Nombre o Autor)
             const matchName = book.name_book.toLowerCase().includes(searchTerm);
             const matchAuthor = book.author_book ? book.author_book.toLowerCase().includes(searchTerm) : false;
-            
             const matchesSearch = searchTerm === '' || matchName || matchAuthor;
 
-            // Si hay géneros seleccionados, el libro debe coincidir con alguno de ellos
+            // 3. Filtrado por género
             const bookGenre = book.genre_book ? book.genre_book.toLowerCase() : '';
             const matchesGenre = selectedGenres.length === 0 || selectedGenres.includes(bookGenre);
 
@@ -93,21 +102,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (selectedGenreUrl) {
             const mainTitle = document.querySelector('.main__title');
             if (mainTitle) mainTitle.textContent = `Libros de ${selectedGenreUrl}`;
-            
-            const initialFiltered = allBooks.filter(book => 
-                book.genre_book && book.genre_book.toLowerCase() === selectedGenreUrl.toLowerCase()
-            );
-            renderBooks(initialFiltered);
-        } else {
-            renderBooks(allBooks);
         }
 
-        // 3. Escuchar eventos de la barra de búsqueda en tiempo real
+        // Ejecutar el filtro inicial para que aplique de entrada la regla de la jornada
+        filterBooks();
+
+        // 3. Escuchar eventos en tiempo real
         if (searchInput) {
             searchInput.addEventListener('input', filterBooks);
         }
 
-        // 4. Escuchar cambios en los checkboxes de filtros
         const checkboxes = document.querySelectorAll('.check__filter input[type="checkbox"]');
         checkboxes.forEach(cb => {
             cb.addEventListener('change', filterBooks);

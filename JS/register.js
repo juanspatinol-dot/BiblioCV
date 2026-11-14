@@ -14,6 +14,11 @@ if (registerForm) {
         const password = document.getElementById('register-passw').value;
         const confirmPassword = document.getElementById('register-cpassw').value;
         const jornada = document.getElementById('register-jornada').value;
+        const address = document.getElementById('register-direc').value;
+        
+        // Si tienes un input de descripción en tu HTML, captúralo aquí. Si no, envíalo vacío.
+        const descriptionInput = document.getElementById('register-descr'); 
+        const description = descriptionInput ? descriptionInput.value : '';
 
         // Validación de contraseñas iguales
         if (password !== confirmPassword) {
@@ -22,14 +27,16 @@ if (registerForm) {
         }
 
         const datosUsuario = {
-            idUser: idUser,
-            name: name,
-            nick: nick,
-            email: email,
-            phone: phone,
-            birthDate: birthDate,
-            password: password,
-            jornada: jornada.toLowerCase()
+            idUser,
+            name,
+            nick,
+            email,
+            phone,
+            birthDate,
+            password,
+            jornada: jornada.toLowerCase(),
+            address,
+            description
         };
 
         try {
@@ -42,8 +49,16 @@ if (registerForm) {
             const resultado = await respuesta.json();
 
             if (respuesta.ok) {
-                // Mensaje de éxito saludando con el nick devuelto por el servidor
-                alert(`¡Bienvenido, ${resultado.nick}! Registro exitoso. Redirigiendo...`);
+                // Guardamos todos los datos en el localStorage
+                localStorage.setItem('userNick', resultado.user.nick);
+                localStorage.setItem('userName', resultado.user.name);
+                localStorage.setItem('userEmail', resultado.user.email);
+                localStorage.setItem('userPhone', resultado.user.phone);
+                localStorage.setItem('userAddress', resultado.user.address);
+                localStorage.setItem('userShift', resultado.user.jornada);
+                localStorage.setItem('userDescription', resultado.user.description);
+
+                alert(`¡Bienvenido, ${resultado.user.nick}! Registro exitoso. Redirigiendo al sistema...`);
                 registerForm.reset();
                 window.location.href = 'home.html'; 
             } else {
