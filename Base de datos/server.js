@@ -117,16 +117,38 @@ app.get('/api/users/:nick', (req, res) => {
 });
 
 // ==========================================
-// RUTA PARA OBTENER LOS LIBROS
+// RUTA PARA OBTENER TODOS LOS LIBROS (Para el catálogo / home.js)
 // ==========================================
 app.get('/api/books', (req, res) => {
-    const query = 'SELECT * FROM books';
+    // Asegúrate de que tu tabla en MySQL se llame 'books' (o cámbiala si tiene otro nombre)
+    const query = 'SELECT * FROM books'; 
+    
     db.query(query, (err, results) => {
         if (err) {
             console.error(err);
-            return res.status(500).json({ error: "Error al obtener los libros." });
+            return res.status(500).json({ error: "Error al obtener el catálogo de libros." });
         }
         res.status(200).json(results);
+    });
+});
+
+// ==========================================
+// RUTA PARA OBTENER UN LIBRO POR SU ID (Para el preview.js)
+// ==========================================
+app.get('/api/books/:id', (req, res) => {
+    const bookId = req.params.id;
+    // Asegúrate de que 'cod_book' sea el nombre del campo ID/código en tu tabla de libros
+    const query = 'SELECT * FROM books WHERE cod_book = ?';
+    
+    db.query(query, [bookId], (err, results) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ error: "Error en el servidor al buscar el libro." });
+        }
+        if (results.length === 0) {
+            return res.status(404).json({ error: "Libro no encontrado." });
+        }
+        res.status(200).json(results[0]);
     });
 });
 
