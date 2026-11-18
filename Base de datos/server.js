@@ -61,7 +61,7 @@ app.post('/api/register', (req, res) => {
 });
 
 // ==========================================
-// RUTA DE LOGIN
+// RUTA DE LOGIN (Asegúrate de que devuelva el ID_user)
 // ==========================================
 app.post('/api/login', (req, res) => {
     const { email, password } = req.body;
@@ -83,7 +83,7 @@ app.post('/api/login', (req, res) => {
         res.status(200).json({
             message: "Login exitoso",
             user: {
-                ID_user: user.ID_user,
+                ID_user: user.ID_user, // <--- Este ID es vital para las interacciones
                 nickname_user: user.nickname_user,
                 name_user: user.name_user,
                 email_user: user.email_user,
@@ -91,7 +91,7 @@ app.post('/api/login', (req, res) => {
                 born_date: user.born_date,
                 adress_user: user.adress_user,
                 type_user: user.type_user,
-                descr_user: user.descr_user // <--- Importante para que viaje la descripción
+                descr_user: user.descr_user
             }
         });
     });
@@ -149,6 +149,48 @@ app.get('/api/books/:id', (req, res) => {
             return res.status(404).json({ error: "Libro no encontrado." });
         }
         res.status(200).json(results[0]);
+    });
+});
+
+// ==========================================
+// RUTA PARA REGISTRAR O ACTUALIZAR INTERACCIONES (Favoritos / Leer más tarde)
+// ==========================================
+app.post('/api/interactions', (req, res) => {
+    const { userid, bookid, type_inter } = req.body;
+
+    if (!userid || !bookid || !type_inter) {
+        return res.status(400).json({ error: "Faltan datos obligatorios (userid, bookid, type_inter)." });
+    }
+
+    const checkQuery = 'SELECT * FROM inter WHERE userid = ? AND bookid = ? AND type_inter = ?';
+    
+    db.query(checkQuery, [userid, bookid, type_inter], (err, results) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ error: "Error en el servidor al verificar la interacción." });
+        }
+
+        if (results.length > 0) {
+            // Si ya existe, la eliminamos (Toggle / Quitar)
+            const deleteQuery = 'DELETE FROM inter WHERE userid = ? AND bookid = ? AND type_inter = ?';
+            db.query(deleteQuery, [userid, bookid, type_inter], (err, deleteResult) => {
+                if (err) {
+                    console.error(err);
+                    return res.status(500).json({ error: "Error al eliminar la interacción." });
+                }
+                return res.status(200).json({ message: "Interacción eliminada con éxito", action: "removed" });
+            });
+        } else {
+            // Si no existe, la insertamos
+            const insertQuery = 'INSERT INTO inter (userid, bookid, type_inter) VALUES (?, ?, ?)';
+            db.query(insertQuery, [userid, bookid, type_inter], (err, insertResult) => {
+                if (err) {
+                    console.error(err);
+                    return res.status(500).json({ error: "Error al guardar la interacción." });
+                }
+                return res.status(200).json({ message: "Interacción guardada con éxito", action: "added" });
+            });
+        }
     });
 });
 

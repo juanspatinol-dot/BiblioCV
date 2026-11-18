@@ -1,12 +1,12 @@
 .main-wrapped
 {
-    min-width: 10%;
+    max-width: 100%;
     margin: 12px auto;
     display: grid;
     grid-template-columns: 1fr 1fr 380px;
-    grid-template-rows: 100px 150px 6fr;
+    grid-template-rows: auto auto 1fr;
     gap: 30px;
-    align-items: baseline;
+    align-items: start;
 }
 
 .title
@@ -124,40 +124,39 @@ main
 
 .sect__library
 {
-    display: grid;
-    grid-template-rows: 180px;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    justify-content: center;
-    align-content: center;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 
 .sect__hero
 {  
     background-color: #16b85d;
     box-shadow: 0 0 40px #0005;
-    padding: 10px;
+    padding: 10px 20px;
     width: 100%;
-    border-radius: 30px;
-    grid-column: span 7;
-    align-self: center;
+    border-radius: 20px;
 }
 
 .sect__body
 {
-    padding: 30px;
-    grid-column: span 7;
+    padding: 10px;
     display: flex;
-    gap: 30px;
-    justify-content: space-between;
+    gap: 20px;
+    justify-content: flex-start;
+    overflow-x: auto;
+    width: 100%;
 }
 
 .book
 {
-    width: 20%;
-    min-height: 320px;
-    border-radius: 30px;
+    flex: 0 0 250px;
+    height: 380px;
+    border-radius: 20px;
     padding: 10px;
-    box-shadow: 0 0 40px #0005;
+    box-shadow: 0 0 20px #0003;
+    background-color: #fff;
+    box-sizing: border-box;
 }
 
 .cata__link

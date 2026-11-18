@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="../CSS/style.css">
     <link rel="stylesheet" href="../CSS/previes.css">
     <script src="../JS/navbar.js"></script>
-    <title>BiblioCV - Libro</title>
+    <title>BiblioCV</title>
 </head>
 <body>
     <header class="hero">
@@ -44,14 +44,47 @@
                     <img src="../Assets/Icons/Personas.png" alt="" class="rate__icon">
                     <p class="rate__parra">0.0/0.0</p>
                 </button>
+                <dialog id="rate-dialog" class="book-dialog">
+                    <div class="dialog-content">
+                        <h2>Califica este libro</h2>
+                        <div class="rating-container" style="margin-top: 15px;">
+                            <label for="rating-select">Selecciona tu nota:</label>
+                            <select id="rating-select" class="rating-select">
+                                <option value="5.0">5.0</option>
+                                <option value="4.0">4.0</option>
+                                <option value="3.0">3.0</option>
+                                <option value="2.0">2.0</option>
+                                <option value="1.0">1.0</option>
+                            </select>
+                        </div>
+
+                        <div class="dialog-actions">
+                            <button id="submit-rating-btn" class="btn-submit">Enviar</button>
+                            <button id="close-rate-dialog-btn" class="btn-close">Cerrar</button>
+                        </div>
+                    </div>
+                </dialog>
                 
                 <form class="book__btns">
                     <button class="book__btn btn--green">Pedir libro</button>
                     <button class="book__btn">Favoritos</button>
+                    <button class="book__btn">Leer más tarde</button>
                     <button class="book__btn btn--green">Leer libro</button>
                 </form>
 
-                <button class="book__btn btn--author">Conoce más</button>
+                <button class="book__btn" id="conoce-mas-btn">Conoce más</button>
+                <dialog id="book-details-dialog" class="book-dialog">
+                    <div class="dialog-content">
+                        <h2>Detalles del Libro</h2>
+                        <div id="dialog-info" style="margin-top: 15px; line-height: 1.6;">
+                            <!-- Aquí se cargan los detalles dinámicamente -->
+                        </div>
+
+                        <div class="dialog-actions" style="margin-top: 25px; text-align: right;">
+                            <button id="close-dialog-btn" class="btn-close">Cerrar</button>
+                        </div>
+                    </div>
+                </dialog>
             </div>
         </section>
     </main>
@@ -63,9 +96,9 @@
                 <li class="ftcontent__item"><a href="aboutus.html" class="ftcontent__link">Sobre nosotros</a></li>
                 <li class="ftcontent__item"><a href="aboutus.html" class="ftcontent__link">Mision & Vision</a></li>
                 <li class="ftcontent__item"><a href="https://www.iecampovaldes.edu.co/" class="ftcontent__link">I.E Campo Valdes</a></li>
-                <li class="ftcontent__item">Ubicación: Cl. 83 #47 - 33</li>
-                <li class="ftcontent__item">Horario: Lunes a Viernes 08:00 a.m. - 04:00 p.m.</li>
-                <li class="ftcontent__item">Teléfono: +57 (604) 211 8234 - (604) 233 6897</li>
+                <li class="ftcontent__item">Ubicación: Cl. 83 #47i>
+                <li class="ftcontent__item">Horario: Lunes a Viernes 08:00 a.m. p.m.</li>
+                <li class="ftcontent__item">Teléfono: +57 (604) 211 8234 233 6897</li>
             </ul>
         </div>
         <div class="footer__ftcontent faq">
