@@ -1,0 +1,30 @@
+.box__content
+{
+    width: 80%;
+    margin: 62px auto;
+}
+
+.content__hero
+{
+    padding: 10px;
+    border-radius: 30px;
+    background-color: #16b85d;
+    display: flex;
+    justify-content: space-between;
+}
+
+.btn
+{
+    display: flex;
+    align-items: center;
+    width: 40%;
+}
+
+.content__search
+{
+    width: 100%;
+    background-color: #f0f0f0;
+    padding: 15px 20px;
+    border: transparent;
+    border-radius: 30px;
+}
