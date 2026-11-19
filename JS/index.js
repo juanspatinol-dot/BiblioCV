@@ -1,22 +1,14 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // ==========================================
-    // 0. REDIRECCIÓN AUTOMÁTICA SI HAY SESIÓN
-    // ==========================================
     const userNick = localStorage.getItem('userNick');
     
-    // Depuración: mira en la consola qué valor tiene realmente userNick
     console.log("Valor actual de userNick en localStorage:", userNick);
 
     if (userNick && userNick.trim() !== "") {
         console.log("🚀 Sesión activa detectada. Redirigiendo a home.html...");
         window.location.href = 'home.html';
-        return; // Detiene la ejecución para que no cargue el resto de la landing page
+        return;
     }
     console.log("🚀 index.js cargado correctamente.");
-
-    // ==========================================
-    // 1. DETECCIÓN DE SESIÓN PARA BOTONES
-    // ==========================================
 
     if (userNick) {
         const navLoginBtn = document.getElementById('nav-login-btn');
@@ -33,9 +25,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // ==========================================
-    // 2. CARGA DINÁMICA DE LIBROS ESPECIALES (4 primeros)
-    // ==========================================
     const specialContainer = document.getElementById('special-books-container');
     
     if (specialContainer) {
@@ -83,15 +72,11 @@ document.addEventListener('DOMContentLoaded', () => {
             .catch(err => console.error('Error al cargar libros especiales:', err));
     }
 
-    // ==========================================
-    // 3. LIBRO RECOMENDADO DE LA SEMANA (Definitivo)
-    // ==========================================
     fetch('http://localhost:3000/api/books')
         .then(res => res.json())
         .then(books => {
             if (!Array.isArray(books) || books.length === 0) return;
 
-            // Ordenamos de mayor a menor calificación usando 'rate_book'
             books.sort((a, b) => {
                 const rateA = parseFloat(a.rate_book || 0);
                 const rateB = parseFloat(b.rate_book || 0);
@@ -111,7 +96,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 recTitle.textContent = topBook.name_book || 'Título no disponible';
             }
             
-            // Usamos el nombre exacto de la columna de tu BD: sipnosis_book
             if (recDesc) {
                 recDesc.textContent = topBook.sipnosis_book || "Sin descripción disponible.";
                 console.log("✨ Sinopsis inyectada con éxito:", recDesc.textContent);

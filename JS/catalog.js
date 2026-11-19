@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', async () => {
-    // 1. PROTEGER RUTA: Si no hay sesión activa, redirigir a register
     const activeNick = localStorage.getItem('userNick');
     if (!activeNick) {
         alert('Debes iniciar sesión para acceder al catálogo.');
@@ -9,13 +8,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const userRole = localStorage.getItem('userRole');
 
-    // Ocultar los botones de gestión de libros si es estudiante o cuenta baneada
     const adminBtnContainer = document.querySelector('.admin__btn');
     if (adminBtnContainer && (!userRole || userRole === 'student' || userRole === 'banned')) {
         adminBtnContainer.remove();
     }
 
-    // Obtener la jornada del usuario almacenada ('morning' o 'afternoon')
     const userShift = localStorage.getItem('userShift') ? localStorage.getItem('userShift').toLowerCase().trim() : '';
 
     const flexboxContainer = document.querySelector('.flexbox');
@@ -24,7 +21,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     let allBooks = [];
 
-    // Función para renderizar los libros en pantalla
     const renderBooks = (booksToRender) => {
         flexboxContainer.innerHTML = '';
 
@@ -47,11 +43,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     };
 
-    // Función para aplicar los filtros (Jornada + Buscador + Checkboxes de Género)
     const filterBooks = () => {
         const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
         
-        // Obtener géneros seleccionados en los checkboxes
         const selectedGenres = [];
         const genreCheckboxes = document.querySelectorAll('.check__filter input[type="checkbox"]');
         
@@ -72,7 +66,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         });
 
-        // Filtrar la lista completa
         let filtered = allBooks.filter(book => {
             const bookType = book.type_book ? book.type_book.toLowerCase().trim() : '';
             if (userShift === 'afternoon' && bookType === 'morning') {
@@ -92,7 +85,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         renderBooks(filtered);
     };
 
-    // Función reutilizable para cargar/refrescar el catálogo desde MySQL
     const loadCatalogBooks = async () => {
         const respuesta = await fetch('http://localhost:3000/api/books');
         if (!respuesta.ok) throw new Error('Error al obtener el catálogo de libros');
@@ -125,9 +117,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         flexboxContainer.innerHTML = '<p>Error al conectar con el servidor.</p>';
     }
 
-    // ==========================================
-    // GESTIÓN DE DIALOGS CRUD DE LIBROS
-    // ==========================================
     const createDialog = document.getElementById('dialog-create-book');
     const deleteDialog = document.getElementById('dialog-delete-book');
     const updateDialog = document.getElementById('dialog-update-book');
@@ -136,7 +125,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         createDialog?.showModal();
     });
 
-    // --- CREAR nuevo libro ---
     const createForm = document.getElementById('form-create-book');
     createForm?.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -196,7 +184,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         updateDialog?.showModal();
     });
 
-    // Botones para cerrar cualquiera de los dialogs
     document.querySelectorAll('[data-close-dialog]').forEach((btn) => {
         btn.addEventListener('click', () => {
             const targetId = btn.getAttribute('data-close-dialog');
@@ -204,7 +191,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     });
 
-    // --- ELIMINAR libro por código o nombre ---
     const deleteForm = document.getElementById('form-delete-book');
     deleteForm?.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -235,7 +221,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
-    // --- ACTUALIZAR libro (Paso 1: Buscar por nombre) ---
     const findUpdateBtn = document.getElementById('btn-find-update-book');
     findUpdateBtn?.addEventListener('click', async () => {
         const nameQuery = document.getElementById('update-book-search')?.value.trim();
@@ -274,7 +259,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
-    // --- ACTUALIZAR libro (Paso 2: Guardar cambios) ---
     const updateForm = document.getElementById('form-update-book');
     updateForm?.addEventListener('submit', async (e) => {
         e.preventDefault();

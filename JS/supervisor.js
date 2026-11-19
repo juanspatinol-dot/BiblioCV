@@ -3,21 +3,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     const userId = localStorage.getItem('userId');
     const userRole = localStorage.getItem('userRole');
 
-    // 1. Validar sesión activa
     if (!activeNick || !userId) {
         alert('Debes iniciar sesión para acceder al panel de supervisión.');
         window.location.href = 'login.html';
         return;
     }
 
-    // 2. Bloquear únicamente a estudiantes, cuentas baneadas o usuarios sin rol
     if (!userRole || userRole === 'student' || userRole === 'banned') {
         alert('Acceso denegado: no tienes permisos para entrar aquí.');
         window.location.href = 'home.html';
         return;
     }
 
-    // 3. Buscar .content__body (o crearlo dentro de .box__content si falta en el HTML)
     let contentBody = document.querySelector('.content__body');
     if (!contentBody) {
         const boxContent = document.querySelector('.box__content');

@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', async () => {
-    // 1. Validar sesión activa (protección de ruta)
     const activeNick = localStorage.getItem('userNick');
     const userId = localStorage.getItem('userId');
 
@@ -9,7 +8,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
-    // 2. Obtener el ID del libro desde los parámetros de la URL (ej: ?id=5)
     const urlParams = new URLSearchParams(window.location.search);
     const bookId = urlParams.get('id');
 
@@ -26,7 +24,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const laterButton = document.getElementById('later-btn');
     const ratingSelect = document.getElementById('rating-select');
 
-    // Helpers visuales para mantener sincronizado el estado al cargar y al hacer clic
     const setBorrowButtonState = (loanStatus) => {
         if (!borrowButton) return;
         if (loanStatus === 'pending') {
@@ -96,7 +93,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     try {
-        // 3. Consultar la API del backend para traer los datos de este libro específico
         const respuesta = await fetch(`http://localhost:3000/api/books/${bookId}`);
         if (!respuesta.ok) throw new Error('No se pudo encontrar el libro solicitado.');
 
@@ -104,7 +100,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         currentBookData = book;
         const resolvedBookId = book.cod_book || bookId;
 
-        // 4. Inyectar dinámicamente los datos en el HTML de preview.html
         const titleElement = document.querySelector('.book__titile');
         if (titleElement) titleElement.textContent = book.name_book || 'Sin título';
 
@@ -125,7 +120,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             rateText.textContent = `${book.rate_book || '0.0'}/5.0`;
         }
 
-        // 4b. Consultar interacciones previas del usuario para restaurar estado visual al refrescar
         try {
             const interRes = await fetch(`http://localhost:3000/api/interactions/${userId}/${resolvedBookId}`);
             if (interRes.ok) {
@@ -150,7 +144,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.warn('No se pudo cargar el estado previo de interacciones:', interError);
         }
 
-        // 4c. Consultar si ya existe una solicitud de préstamo para este libro
         try {
             const loanRes = await fetch(`http://localhost:3000/api/loans/${userId}/${resolvedBookId}`);
             if (loanRes.ok) {
@@ -163,11 +156,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.warn('No se pudo cargar el estado del préstamo:', loanError);
         }
 
-        // ==========================================
-        // 5. FUNCIONALIDAD DE LOS 4 BOTONES
-        // ==========================================
-
-        // --- Botón 1: Pedir libro ---
         if (borrowButton) {
             borrowButton.addEventListener('click', async (e) => {
                 e.preventDefault();
@@ -203,7 +191,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
         }
 
-        // --- Botón 2: Favoritos ---
         if (favButton) {
             favButton.addEventListener('click', async (e) => {
                 e.preventDefault();
@@ -228,7 +215,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
         }
 
-        // --- Botón 3: Leer más tarde ---
         if (laterButton) {
             laterButton.addEventListener('click', async (e) => {
                 e.preventDefault();
@@ -253,7 +239,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
         }
 
-        // --- Botón 4: Leer libro ---
         const readButton = document.getElementById('read-btn') || document.querySelector('.book__btns .btn--green:last-of-type');
         if (readButton) {
             readButton.addEventListener('click', (e) => {
@@ -272,9 +257,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         window.location.href = 'home.html';
     }
 
-    // ==========================================
-    // 6. FUNCIONALIDAD DEL DIÁLOGO DE DETALLES
-    // ==========================================
     const detailsDialog = document.getElementById('book-details-dialog');
     const conoceMasBtn = document.getElementById('conoce-mas-btn');
     const closeDialogBtn = document.getElementById('close-dialog-btn');
@@ -305,9 +287,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // ==========================================
-    // 7. FUNCIONALIDAD DEL DIÁLOGO DE CALIFICACIÓN
-    // ==========================================
     const rateDialog = document.getElementById('rate-dialog');
     const rateContentBtn = document.querySelector('.book__rate-content');
     const closeRateDialogBtn = document.getElementById('close-rate-dialog-btn');

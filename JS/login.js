@@ -1,12 +1,10 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Buscamos por la clase '.login' que tiene tu formulario en el HTML
     const loginForm = document.querySelector('form.login'); 
 
     if (loginForm) {
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            // Usamos los IDs exactos que están en tus inputs del HTML
             const emailInput = document.getElementById('login-email');
             const passwordInput = document.getElementById('login-passw');
 
@@ -37,7 +35,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log("📥 Respuesta del servidor:", data);
 
                 if (response.ok && data.user) {
-                    // Guardamos los datos clave en el localStorage
+                    if (data.user.role_user === 'banned') {
+                        alert('Tu cuenta ha sido suspendida. Contacta con un administrador.');
+                        return;
+                    }
+
                     localStorage.setItem('userNick', data.user.nickname_user);
                     localStorage.setItem('userId', data.user.ID_user);         
                     localStorage.setItem('userRole', data.user.role_user);     

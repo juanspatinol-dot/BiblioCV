@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', async () => {
-    // 1. PROTEGER RUTA: Si no hay sesión activa, redirigir a register
     const activeNick = localStorage.getItem('userNick');
     if (!activeNick) {
         alert('Debes iniciar sesión para acceder al sistema.');
@@ -7,7 +6,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
-    // 1b. OCULTAR OPCIÓN DE SUPERVISAR SI EL USUARIO ES ESTUDIANTE
     const userRole = localStorage.getItem('userRole');
     if (!userRole || userRole === 'student' || userRole === 'banned') {
         const supervisorLink = document.querySelector('a[href="supervisor.html"]');
@@ -21,23 +19,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // Obtener la jornada del usuario almacenada
     const userShift = localStorage.getItem('userShift') ? localStorage.getItem('userShift').toLowerCase().trim() : '';
 
-    // 2. MOSTRAR APODO EN EL BIENVENIDO
     const welcomeTitle = document.querySelector('.main-wrapped .title');
     if (welcomeTitle) {
         welcomeTitle.textContent = `Bienvenido ${activeNick} a BiblioCV.`;
     }
 
     try {
-        // 3. CARGAR LIBROS DESDE LA BASE DE DATOS
         const respuesta = await fetch('http://localhost:3000/api/books');
         if (!respuesta.ok) throw new Error('Error al obtener el catálogo de libros');
         
         const books = await respuesta.json();
 
-        // Filtrar por jornada (si es afternoon, se ocultan los exclusivos de morning)
         const validBooks = books.filter(book => {
             const bookType = book.type_book ? book.type_book.toLowerCase().trim() : '';
             if (userShift === 'afternoon' && bookType === 'morning') {
@@ -46,7 +40,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             return true;
         });
 
-        // Agrupar los libros válidos por su género (máximo 5 por sección)
         const booksByGenre = {};
         validBooks.forEach(book => {
             const genre = book.genre_book || 'General';
@@ -94,7 +87,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         });
 
-        // 4. Funcionalidad de la barra de búsqueda en el Home
         const homeSearchInput = document.querySelector('.navbar__main-input.btn--search');
         if (homeSearchInput) {
             homeSearchInput.addEventListener('keypress', (e) => {

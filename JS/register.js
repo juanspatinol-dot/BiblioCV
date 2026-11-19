@@ -4,7 +4,6 @@ if (registerForm) {
     registerForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        // Capturamos los valores de los inputs del formulario
         const idUser = document.getElementById('register-id').value;
         const name = document.getElementById('register-name').value;
         const nick = document.getElementById('register-nick').value;
@@ -16,11 +15,9 @@ if (registerForm) {
         const jornada = document.getElementById('register-jornada').value;
         const address = document.getElementById('register-direc').value;
         
-        // Si tienes un input de descripción en tu HTML, captúralo aquí. Si no, envíalo vacío.
         const descriptionInput = document.getElementById('register-descr'); 
         const description = descriptionInput ? descriptionInput.value : '';
 
-        // Validación de contraseñas iguales
         if (password !== confirmPassword) {
             alert('¡Las contraseñas no coinciden!');
             return;
@@ -49,7 +46,6 @@ if (registerForm) {
             const resultado = await respuesta.json();
 
             if (respuesta.ok) {
-                // Guardamos todos los datos en el localStorage
                 localStorage.setItem('userNick', resultado.user.nick);
                 localStorage.setItem('userName', resultado.user.name);
                 localStorage.setItem('userEmail', resultado.user.email);
