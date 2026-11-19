@@ -19,7 +19,81 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
-    let currentBookData = null; 
+    let currentBookData = null;
+    const rateText = document.querySelector('.rate__parra');
+    const borrowButton = document.getElementById('borrow-btn') || document.querySelector('.book__btns .btn--green:first-of-type');
+    const favButton = document.getElementById('fav-btn') || document.querySelector('.book__btns .book__btn:not(.btn--green)');
+    const laterButton = document.getElementById('later-btn');
+    const ratingSelect = document.getElementById('rating-select');
+
+    // Helpers visuales para mantener sincronizado el estado al cargar y al hacer clic
+    const setBorrowButtonState = (loanStatus) => {
+        if (!borrowButton) return;
+        if (loanStatus === 'pending') {
+            borrowButton.textContent = 'Pendiente';
+            borrowButton.style.backgroundColor = '#fdcb6e';
+            borrowButton.style.color = '#2d3436';
+            borrowButton.disabled = true;
+        } else if (loanStatus === 'acepted') {
+            borrowButton.textContent = 'Préstamo activo';
+            borrowButton.style.backgroundColor = '#0984e3';
+            borrowButton.style.color = '#ffffff';
+            borrowButton.disabled = true;
+        } else {
+            borrowButton.textContent = 'Pedir libro';
+            borrowButton.style.backgroundColor = '';
+            borrowButton.style.color = '';
+            borrowButton.disabled = false;
+        }
+    };
+
+    const setFavButtonState = (isActive) => {
+        if (!favButton) return;
+        if (isActive) {
+            favButton.textContent = "Favoritos";
+            favButton.style.backgroundColor = "#333";
+            favButton.style.color = "#f0f0f0";
+        } else {
+            favButton.textContent = "Favoritos";
+            favButton.style.backgroundColor = "";
+            favButton.style.color = "";
+        }
+    };
+
+    const setLaterButtonState = (isActive) => {
+        if (!laterButton) return;
+        if (isActive) {
+            laterButton.textContent = "Guardado";
+            laterButton.style.backgroundColor = "#74b9ff";
+            laterButton.style.color = "white";
+        } else {
+            laterButton.textContent = "Leer más tarde";
+            laterButton.style.backgroundColor = "";
+            laterButton.style.color = "";
+        }
+    };
+
+    const sendInteraction = async (payload, label) => {
+        const response = await fetch('http://localhost:3000/api/interactions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        const rawText = await response.text();
+        let data = {};
+        try {
+            data = JSON.parse(rawText);
+        } catch {
+            data = { rawText };
+        }
+
+        if (!response.ok) {
+            throw new Error(data.error || `Error HTTP ${response.status}`);
+        }
+
+        return data;
+    };
 
     try {
         // 3. Consultar la API del backend para traer los datos de este libro específico
@@ -27,7 +101,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!respuesta.ok) throw new Error('No se pudo encontrar el libro solicitado.');
 
         const book = await respuesta.json();
-        currentBookData = book; 
+        currentBookData = book;
+        const resolvedBookId = book.cod_book || bookId;
 
         // 4. Inyectar dinámicamente los datos en el HTML de preview.html
         const titleElement = document.querySelector('.book__titile');
@@ -46,100 +121,134 @@ document.addEventListener('DOMContentLoaded', async () => {
             parraElement.textContent = sinopsisText || 'No hay sinopsis disponible para este libro.';
         }
 
-        const rateText = document.querySelector('.rate__parra');
         if (rateText) {
             rateText.textContent = `${book.rate_book || '0.0'}/5.0`;
+        }
+
+        // 4b. Consultar interacciones previas del usuario para restaurar estado visual al refrescar
+        try {
+            const interRes = await fetch(`http://localhost:3000/api/interactions/${userId}/${resolvedBookId}`);
+            if (interRes.ok) {
+                const interState = await interRes.json();
+                setFavButtonState(Boolean(interState.favorite));
+                setLaterButtonState(Boolean(interState.read_later));
+
+                if (interState.rating !== null && interState.rating !== undefined && !Number.isNaN(interState.rating)) {
+                    if (rateText) {
+                        rateText.textContent = `${Number(interState.rating).toFixed(1)}/5.0`;
+                    }
+                    if (ratingSelect) {
+                        const formattedOption = Number(interState.rating).toFixed(1);
+                        const existsOption = Array.from(ratingSelect.options).some(opt => opt.value === formattedOption);
+                        if (existsOption) {
+                            ratingSelect.value = formattedOption;
+                        }
+                    }
+                }
+            }
+        } catch (interError) {
+            console.warn('No se pudo cargar el estado previo de interacciones:', interError);
+        }
+
+        // 4c. Consultar si ya existe una solicitud de préstamo para este libro
+        try {
+            const loanRes = await fetch(`http://localhost:3000/api/loans/${userId}/${resolvedBookId}`);
+            if (loanRes.ok) {
+                const loanData = await loanRes.json();
+                if (loanData.loan) {
+                    setBorrowButtonState(loanData.loan.type_loan);
+                }
+            }
+        } catch (loanError) {
+            console.warn('No se pudo cargar el estado del préstamo:', loanError);
         }
 
         // ==========================================
         // 5. FUNCIONALIDAD DE LOS 4 BOTONES
         // ==========================================
-        
+
         // --- Botón 1: Pedir libro ---
-        const borrowButton = document.getElementById('borrow-btn') || document.querySelector('.book__btns .btn--green:first-of-type');
         if (borrowButton) {
-            borrowButton.addEventListener('click', (e) => {
+            borrowButton.addEventListener('click', async (e) => {
                 e.preventDefault();
-                if (book.quantity > 0) {
-                    alert(`¡Préstamo exitoso! Has solicitado "${book.name_book}". Stock restante: ${book.quantity - 1}`);
-                } else {
+
+                if (book.quantity <= 0) {
                     alert('Lo sentimos, este libro no tiene stock disponible en este momento.');
+                    return;
+                }
+
+                try {
+                    const res = await fetch('http://localhost:3000/api/loans', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            userid: userId,
+                            bookid: resolvedBookId
+                        })
+                    });
+
+                    const data = await res.json();
+
+                    if (!res.ok) {
+                        alert(data.error || 'No se pudo enviar la solicitud de préstamo.');
+                        return;
+                    }
+
+                    setBorrowButtonState('pending');
+                    alert(`¡Solicitud enviada! Tu petición para "${book.name_book}" quedó pendiente de aprobación por un administrador.`);
+                } catch (error) {
+                    console.error('[PEDIR LIBRO] Error:', error);
+                    alert('Error de conexión al intentar solicitar el libro.');
                 }
             });
         }
 
-        // --- Botón 2: Favoritos (Conectado a la BD) ---
-        const favButton = document.getElementById('fav-btn') || document.querySelector('.book__btns .book__btn:not(.btn--green)');
+        // --- Botón 2: Favoritos ---
         if (favButton) {
             favButton.addEventListener('click', async (e) => {
                 e.preventDefault();
                 try {
-                    const response = await fetch('http://localhost:3000/api/interactions', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            userid: userId,
-                            bookid: book.cod_book,
-                            type_inter: 'favorite'
-                        })
-                    });
+                    const data = await sendInteraction({
+                        userid: userId,
+                        bookid: resolvedBookId,
+                        type_inter: 'favorite'
+                    }, 'FAVORITOS');
 
-                    const data = await response.json();
-                    if (response.ok) {
-                        if (data.action === 'added') {
-                            favButton.textContent = "❤️ En Favoritos";
-                            favButton.style.backgroundColor = "#ff7675";
-                            favButton.style.color = "white";
-                            alert(`¡"${book.name_book}" agregado a favoritos!`);
-                        } else {
-                            favButton.textContent = "Favoritos";
-                            favButton.style.backgroundColor = "";
-                            favButton.style.color = "";
-                            alert(`"${book.name_book}" eliminado de favoritos.`);
-                        }
+                    if (data.action === 'added') {
+                        setFavButtonState(true);
+                        alert(`¡"${book.name_book}" agregado a favoritos!`);
                     } else {
-                        alert(data.error);
+                        setFavButtonState(false);
+                        alert(`"${book.name_book}" eliminado de favoritos.`);
                     }
                 } catch (error) {
-                    console.error("Error al gestionar favoritos:", error);
+                    console.error("[FAVORITOS] Error:", error.message);
+                    alert(error.message || 'No se pudo actualizar favoritos.');
                 }
             });
         }
 
-        // --- Botón 3: Leer más tarde (Conectado a la BD) ---
-        const laterButton = document.getElementById('later-btn');
+        // --- Botón 3: Leer más tarde ---
         if (laterButton) {
             laterButton.addEventListener('click', async (e) => {
                 e.preventDefault();
                 try {
-                    const response = await fetch('http://localhost:3000/api/interactions', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            userid: userId,
-                            bookid: book.cod_book,
-                            type_inter: 'read_later'
-                        })
-                    });
+                    const data = await sendInteraction({
+                        userid: userId,
+                        bookid: resolvedBookId,
+                        type_inter: 'read_later'
+                    }, 'LEER MÁS TARDE');
 
-                    const data = await response.json();
-                    if (response.ok) {
-                        if (data.action === 'added') {
-                            laterButton.textContent = "📌 Guardado";
-                            laterButton.style.backgroundColor = "#74b9ff";
-                            laterButton.style.color = "white";
-                            alert(`¡"${book.name_book}" guardado para leer más tarde!`);
-                        } else {
-                            laterButton.textContent = "Leer más tarde";
-                            laterButton.style.backgroundColor = "";
-                            laterButton.style.color = "";
-                            alert(`"${book.name_book}" quitado de leer más tarde.`);
-                        }
+                    if (data.action === 'added') {
+                        setLaterButtonState(true);
+                        alert(`¡"${book.name_book}" guardado para leer más tarde!`);
                     } else {
-                        alert(data.error);
+                        setLaterButtonState(false);
+                        alert(`"${book.name_book}" quitado de leer más tarde.`);
                     }
                 } catch (error) {
-                    console.error("Error al gestionar lectura posterior:", error);
+                    console.error("[LEER MÁS TARDE] Error:", error.message);
+                    alert(error.message || 'No se pudo actualizar leer más tarde.');
                 }
             });
         }
@@ -158,7 +267,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
     } catch (error) {
-        console.error('Error al cargar la vista previa:', error);
+        console.error('[PREVIEW] Error al cargar la vista previa:', error);
         alert('Hubo un error al cargar la información del libro.');
         window.location.href = 'home.html';
     }
@@ -203,7 +312,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const rateContentBtn = document.querySelector('.book__rate-content');
     const closeRateDialogBtn = document.getElementById('close-rate-dialog-btn');
     const submitRatingBtn = document.getElementById('submit-rating-btn');
-    const ratingSelect = document.getElementById('rating-select');
 
     if (rateContentBtn) {
         rateContentBtn.addEventListener('click', (e) => {
@@ -220,11 +328,27 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    if (submitRatingBtn && ratingSelect && rateDialog) {
-        submitRatingBtn.addEventListener('click', () => {
-            const selectedRate = ratingSelect.value;
-            alert(`¡Gracias, ${activeNick}! Has calificado este libro con ${selectedRate}/5.0`);
-            rateDialog.close();
+    if (submitRatingBtn && ratingSelect && rateDialog && currentBookData) {
+        submitRatingBtn.addEventListener('click', async () => {
+            const selectedRate = parseFloat(ratingSelect.value);
+
+            try {
+                await sendInteraction({
+                    userid: userId,
+                    bookid: currentBookData.cod_book || bookId,
+                    type_inter: 'rating',
+                    rating: selectedRate
+                }, 'CALIFICAR');
+
+                alert(`¡Gracias, ${activeNick}! Has calificado este libro con ${selectedRate.toFixed(1)}/5.0`);
+                if (rateText) {
+                    rateText.textContent = `${selectedRate.toFixed(1)}/5.0`;
+                }
+                rateDialog.close();
+            } catch (error) {
+                console.error('[CALIFICAR] Error:', error.message);
+                alert(error.message || 'No se pudo guardar la calificación.');
+            }
         });
     }
 });

@@ -63,9 +63,48 @@
     padding: 10px;
 }
 
-.admin__img
+.admin__btn
 {
-    
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 300px;
+}
+
+.create__book
+{
+    width: 300px;
+    height: 20%;
+    padding: 10px;
+    font-size: 1rem;
+    border: 2px solid #333;
+    border-radius: 30px;
+    cursor: pointer;
+    color: #333;
+    font-weight: bold;
+    transition: 0.2s;
+}
+
+.create__book:hover
+{
+    transform: scale(1.1);
+    border: transparent;
+}
+
+.create--book:hover
+{
+    background-color: #16b85d;
+}
+
+.delete--book:hover
+{
+    background-color: #bf1524;
+    color: #f0f0f0;
+}
+
+.update--book:hover
+{
+    background-color: #f5b816;
 }
 
 .check__filter

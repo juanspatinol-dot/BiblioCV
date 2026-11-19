@@ -58,6 +58,7 @@
 
 .perfil__form
 {
+    width: 100%;
     padding: 30px;
     display: flex;
     gap: 30px;
@@ -68,7 +69,8 @@
 .btn__perfil-form
 {
     color: #333;
-    padding: 10px 20px;
+    width: 120px;
+    padding: 10px;
     background-color: transparent;
     border: 2px solid #333;
     font-weight: bold;

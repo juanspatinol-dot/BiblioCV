@@ -1,71 +1,95 @@
-.wrap-main
-{
+.wrap-main {
     min-width: 90%;
     margin: 12px auto;
     display: grid;
     grid-template-columns: 1fr 1fr minmax(200px, 280px);
-    grid-template-rows: 100px 150px 6fr;
+    grid-template-rows: auto auto 1fr;
     gap: 30px;
-    align-items: baseline;
+    align-items: start;
 }
 
-.main__hero
+.hr--bolder
 {
+    margin-bottom: 62px;
+}
+
+.main__hero {
     display: flex;
     justify-content: space-between;
+    align-items: center;
 }
 
-.main__form
-{
+.main__form {
     display: flex;
     gap: 40px;
 }
 
-.main__btn
-{
+.main__btn {
     border: none;
     width: 60px;
+    background: transparent;
 }
 
-.main__btn-img
-{
+.main__btn-img {
     width: 80%;
     object-fit: contain;
     transition: 0.3s ease;
     cursor: pointer;
 }
 
-.main__btn-img:hover
-{
-    
+.main__btn-img:hover {
     transform: scale(1.1);
 }
 
-.sect__library
-{
+.sect__library,
+.sect__library-record {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 28px;
+    width: 100%;
+}
+
+.sect__body {
     display: grid;
-    grid-template-rows: 180px;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    justify-content: center;
-    align-content: center;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 240px));
+    gap: 40px;
+    width: 100%;
+    align-items: start;
+    justify-content: start;
 }
 
-.sect__body
-{
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    grid-template-rows: repeat(auto-fill, minmax(300px, 1fr));
-    justify-content: center;
-    justify-items: center;
+.book {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
-.book
-{
-    width: 90%;
+.book__link {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+    gap: 4px;
 }
 
-.check__filter
-{
+.book__img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+.book__title-card {
+    margin: 2px 0 0 0;
+    font-weight: 600;
+    font-size: 0.95rem;
+    line-height: 1.2;
+    text-align: center;
+}
+
+.check__filter {
     width: 90%;
     margin: auto;
     border: none;
@@ -73,52 +97,47 @@
     padding: 30px 10px;
 }
 
-.check__form, .check__filter
-{
+.check__form,
+.check__filter {
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 
-.check__filter:first-child
-{
+.check__filter:first-child {
     border: none;
     margin-top: 30px;
 }
 
-.check__title
-{
+.check__title {
     padding: 8px 14px;
     text-align: center;
     font-size: 1.2rem;
 }
 
-.check__content
-{
+.check__content {
     display: flex;
     gap: 10px;
     flex-direction: row-reverse;
     justify-content: start;
-    align-content: center;
+    align-items: center;
 }
 
-.check__cb-title
-{
+.check__cb-title {
     font-size: 1.1rem;
     color: #3339;
     cursor: pointer;
     transition: 0.1s;
 }
 
-input[type="checkbox"]
-{
+input[type="checkbox"] {
     cursor: pointer;
     border-radius: 5px;
-    width: 50px;
+    width: 20px;
+    height: 20px;
 }
 
-.check__content:has(input[type="checkbox"]:checked) .check__cb-title
-{
+.check__content:has(input[type="checkbox"]:checked) .check__cb-title {
     color: #333;
     font-weight: bold;
 }

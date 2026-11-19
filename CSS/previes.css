@@ -88,6 +88,7 @@
 .book__btn
 {
     border: none;
+    width: 200px;
     padding: 12px 30px;
     border-radius: 30px;
     border: 2px solid #333;

@@ -7,6 +7,20 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
+    // 1b. OCULTAR OPCIÓN DE SUPERVISAR SI EL USUARIO ES ESTUDIANTE
+    const userRole = localStorage.getItem('userRole');
+    if (!userRole || userRole === 'student' || userRole === 'banned') {
+        const supervisorLink = document.querySelector('a[href="supervisor.html"]');
+        if (supervisorLink) {
+            const listItem = supervisorLink.closest('.nav__list-item');
+            if (listItem) {
+                listItem.remove();
+            } else {
+                supervisorLink.remove();
+            }
+        }
+    }
+
     // Obtener la jornada del usuario almacenada
     const userShift = localStorage.getItem('userShift') ? localStorage.getItem('userShift').toLowerCase().trim() : '';
 
