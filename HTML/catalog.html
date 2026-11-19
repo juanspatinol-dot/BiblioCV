@@ -67,10 +67,155 @@
             </div>
 
             <div class="admin__btn">
-                <button class="create__book create--book">Crear un libro para BiblioCV</button>
-                <button class="create__book delete--book">Eliminar un libro para BiblioCV</button>
-                <button class="create__book update--book">Actualizar un libro para BiblioCV</button>
+                <button type="button" class="create__book create--book">Crear un libro para BiblioCV</button>
+                <button type="button" class="create__book delete--book">Eliminar un libro para BiblioCV</button>
+                <button type="button" class="create__book update--book">Actualizar un libro para BiblioCV</button>
             </div>
+
+            <!-- 1. DIALOG: CREAR LIBRO -->
+            <dialog id="dialog-create-book" class="book-dialog">
+                <div class="dialog__content">
+                    <div class="dialog__header dialog--green">
+                        <h2 class="dialog__title">Crear un libro para BiblioCV</h2>
+                    </div>
+                    <form id="form-create-book" class="dialog__form">
+                        <div class="dialog__grid">
+                            <label class="dialog__label dialog__field--full">Título
+                                <input type="text" id="new-name-book" class="dialog__input" placeholder="Nombre del libro" required>
+                            </label>
+                            <label class="dialog__label">Autor
+                                <input type="text" id="new-author-book" class="dialog__input" placeholder="Nombre del autor" required>
+                            </label>
+                            <label class="dialog__label">Género
+                                <select id="new-genre-book" class="dialog__input" required>
+                                    <option value="" hidden>Selecciona un género</option>
+                                    <option value="Terror">Terror</option>
+                                    <option value="Acción">Acción</option>
+                                    <option value="Ciencia Ficción">Ciencia Ficción</option>
+                                    <option value="Comedia">Comedia</option>
+                                    <option value="Romance">Romance</option>
+                                    <option value="Historia">Historia</option>
+                                    <option value="Sociales">Sociales</option>
+                                    <option value="Educativos">Educativos</option>
+                                </select>
+                            </label>
+                            <label class="dialog__label">Editorial
+                                <input type="text" id="new-publi-book" class="dialog__input" placeholder="Ej: Norma">
+                            </label>
+                            <label class="dialog__label">Año de publicación
+                                <input type="text" id="new-year-book" class="dialog__input" placeholder="Ej: 2020">
+                            </label>
+                            <label class="dialog__label">Cantidad (Stock)
+                                <input type="number" id="new-quantity" class="dialog__input" min="0" value="1" required>
+                            </label>
+                            <label class="dialog__label">Jornada / Disponibilidad
+                                <select id="new-type-book" class="dialog__input" required>
+                                    <option value="all">Todas las jornadas (all)</option>
+                                    <option value="morning">Solo Mañana (morning)</option>
+                                    <option value="afternoon">Solo Tarde (afternoon)</option>
+                                </select>
+                            </label>
+                            <label class="dialog__label">URL Portada
+                                <input type="text" id="new-imgurl-book" class="dialog__input" placeholder="../Assets/Portadas/libro.jpg">
+                            </label>
+                            <label class="dialog__label">URL PDF (Opcional)
+                                <input type="text" id="new-fileurl-book" class="dialog__input" placeholder="../Assets/Libros/libro.pdf">
+                            </label>
+                            <label class="dialog__label dialog__field--full">Sinopsis
+                                <textarea id="new-sinopsis-book" class="dialog__textarea" rows="3" placeholder="Escribe una breve descripción del libro..."></textarea>
+                            </label>
+                        </div>
+
+                        <div class="dialog__actions">
+                            <button type="submit" class="dialog__btn btn--confirm-green">Guardar libro</button>
+                            <button type="button" class="dialog__btn btn--cancel" data-close-dialog="dialog-create-book">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+            </dialog>
+
+            <!-- 2. DIALOG: ELIMINAR LIBRO -->
+            <dialog id="dialog-delete-book" class="book-dialog">
+                <div class="dialog__content">
+                    <div class="dialog__header dialog--red">
+                        <h2 class="dialog__title">Eliminar un libro</h2>
+                    </div>
+                    <form id="form-delete-book" class="dialog__form">
+                        <label for="delete-book-query" class="dialog__label">Código o nombre exacto del libro:</label>
+                        <input type="text" id="delete-book-query" class="dialog__input" placeholder="Ej: 302 o El contrato social" required>
+
+                        <div class="dialog__actions">
+                            <button type="submit" class="dialog__btn btn--confirm-red">Eliminar</button>
+                            <button type="button" class="dialog__btn btn--cancel" data-close-dialog="dialog-delete-book">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+            </dialog>
+
+            <!-- 3. DIALOG: ACTUALIZAR LIBRO -->
+            <dialog id="dialog-update-book" class="book-dialog">
+                <div class="dialog__content">
+                    <div class="dialog__header dialog--yellow">
+                        <h2 class="dialog__title">Actualizar un libro</h2>
+                    </div>
+
+                    <!-- Paso A: Buscar libro por nombre -->
+                    <div id="update-search-step" class="dialog__form">
+                        <label for="update-book-search" class="dialog__label">Nombre del libro a actualizar:</label>
+                        <div class="dialog__search-row">
+                            <input type="text" id="update-book-search" class="dialog__input" placeholder="Escribe el nombre del libro...">
+                            <button type="button" id="btn-find-update-book" class="dialog__btn btn--confirm-yellow">Buscar</button>
+                        </div>
+                    </div>
+
+                    <!-- Paso B: Formulario con datos cargados -->
+                    <form id="form-update-book" class="dialog__form dialog__form--hidden">
+                        <input type="hidden" id="upd-cod-book">
+
+                        <div class="dialog__grid">
+                            <label class="dialog__label">Título
+                                <input type="text" id="upd-name-book" class="dialog__input" required>
+                            </label>
+                            <label class="dialog__label">Autor
+                                <input type="text" id="upd-author-book" class="dialog__input">
+                            </label>
+                            <label class="dialog__label">Género
+                                <input type="text" id="upd-genre-book" class="dialog__input">
+                            </label>
+                            <label class="dialog__label">Editorial
+                                <input type="text" id="upd-publi-book" class="dialog__input">
+                            </label>
+                            <label class="dialog__label">Año
+                                <input type="text" id="upd-year-book" class="dialog__input">
+                            </label>
+                            <label class="dialog__label">Cantidad (Stock)
+                                <input type="number" id="upd-quantity" class="dialog__input" min="0">
+                            </label>
+                            <label class="dialog__label">URL Portada
+                                <input type="text" id="upd-imgurl-book" class="dialog__input">
+                            </label>
+                            <label class="dialog__label">URL PDF
+                                <input type="text" id="upd-fileurl-book" class="dialog__input">
+                            </label>
+                            <label class="dialog__label dialog__field--full">Tipo / Jornada (morning, afternoon, all)
+                                <input type="text" id="upd-type-book" class="dialog__input">
+                            </label>
+                            <label class="dialog__label dialog__field--full">Sinopsis
+                                <textarea id="upd-sinopsis-book" class="dialog__textarea" rows="3"></textarea>
+                            </label>
+                        </div>
+
+                        <div class="dialog__actions">
+                            <button type="submit" class="dialog__btn btn--confirm-yellow">Guardar cambios</button>
+                            <button type="button" class="dialog__btn btn--cancel" data-close-dialog="dialog-update-book">Cancelar</button>
+                        </div>
+                    </form>
+
+                    <div id="update-initial-close" class="dialog__actions dialog__actions--footer">
+                        <button type="button" class="dialog__btn btn--cancel" data-close-dialog="dialog-update-book">Cerrar</button>
+                    </div>
+                </div>
+            </dialog>
         </main>
 
         <aside class="filter">

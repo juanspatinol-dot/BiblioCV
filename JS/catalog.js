@@ -7,6 +7,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
+    const userRole = localStorage.getItem('userRole');
+
+    // Ocultar los botones de gestión de libros si es estudiante o cuenta baneada
+    const adminBtnContainer = document.querySelector('.admin__btn');
+    if (adminBtnContainer && (!userRole || userRole === 'student' || userRole === 'banned')) {
+        adminBtnContainer.remove();
+    }
+
     // Obtener la jornada del usuario almacenada ('morning' o 'afternoon')
     const userShift = localStorage.getItem('userShift') ? localStorage.getItem('userShift').toLowerCase().trim() : '';
 
@@ -66,19 +74,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Filtrar la lista completa
         let filtered = allBooks.filter(book => {
-            // 1. REGLA DE JORNADA (type_book): 
-            // Si el usuario es afternoon, no ve los exclusivos de morning. Si es morning, ve todo.
             const bookType = book.type_book ? book.type_book.toLowerCase().trim() : '';
             if (userShift === 'afternoon' && bookType === 'morning') {
                 return false;
             }
 
-            // 2. Búsqueda por texto (Nombre o Autor)
             const matchName = book.name_book.toLowerCase().includes(searchTerm);
             const matchAuthor = book.author_book ? book.author_book.toLowerCase().includes(searchTerm) : false;
             const matchesSearch = searchTerm === '' || matchName || matchAuthor;
 
-            // 3. Filtrado por género
             const bookGenre = book.genre_book ? book.genre_book.toLowerCase() : '';
             const matchesGenre = selectedGenres.length === 0 || selectedGenres.includes(bookGenre);
 
@@ -88,14 +92,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         renderBooks(filtered);
     };
 
-    try {
-        // 2. Cargar todos los libros desde la API
+    // Función reutilizable para cargar/refrescar el catálogo desde MySQL
+    const loadCatalogBooks = async () => {
         const respuesta = await fetch('http://localhost:3000/api/books');
         if (!respuesta.ok) throw new Error('Error al obtener el catálogo de libros');
-        
         allBooks = await respuesta.json();
+        filterBooks();
+    };
 
-        // Verificar si hay un género inicial por URL (ej: desde el "Ver más" del home)
+    try {
+        await loadCatalogBooks();
+
         const urlParams = new URLSearchParams(window.location.search);
         const selectedGenreUrl = urlParams.get('genre');
 
@@ -104,10 +111,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (mainTitle) mainTitle.textContent = `Libros de ${selectedGenreUrl}`;
         }
 
-        // Ejecutar el filtro inicial para que aplique de entrada la regla de la jornada
-        filterBooks();
-
-        // 3. Escuchar eventos en tiempo real
         if (searchInput) {
             searchInput.addEventListener('input', filterBooks);
         }
@@ -121,4 +124,194 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error('Error al cargar el catálogo:', error);
         flexboxContainer.innerHTML = '<p>Error al conectar con el servidor.</p>';
     }
+
+    // ==========================================
+    // GESTIÓN DE DIALOGS CRUD DE LIBROS
+    // ==========================================
+    const createDialog = document.getElementById('dialog-create-book');
+    const deleteDialog = document.getElementById('dialog-delete-book');
+    const updateDialog = document.getElementById('dialog-update-book');
+
+    document.querySelector('.create--book')?.addEventListener('click', () => {
+        createDialog?.showModal();
+    });
+
+    // --- CREAR nuevo libro ---
+    const createForm = document.getElementById('form-create-book');
+    createForm?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const payload = {
+            name_book: document.getElementById('new-name-book').value.trim(),
+            author_book: document.getElementById('new-author-book').value.trim(),
+            genre_book: document.getElementById('new-genre-book').value,
+            publi_book: document.getElementById('new-publi-book').value.trim(),
+            year_book: document.getElementById('new-year-book').value.trim(),
+            quantity: document.getElementById('new-quantity').value,
+            type_book: document.getElementById('new-type-book').value,
+            imgurl_book: document.getElementById('new-imgurl-book').value.trim(),
+            fileurl_book: document.getElementById('new-fileurl-book').value.trim(),
+            sinopsis_book: document.getElementById('new-sinopsis-book').value.trim()
+        };
+
+        try {
+            const res = await fetch('http://localhost:3000/api/admin/books', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await res.json();
+            if (!res.ok) {
+                alert(data.error || 'No se pudo crear el libro.');
+                return;
+            }
+
+            alert(data.message);
+            createForm.reset();
+            createDialog?.close();
+            await loadCatalogBooks();
+        } catch (error) {
+            console.error('[CATALOG] Error al crear libro:', error);
+            alert('Error de conexión con el servidor.');
+        }
+    });
+
+    document.querySelector('.delete--book')?.addEventListener('click', () => {
+        document.getElementById('form-delete-book')?.reset();
+        deleteDialog?.showModal();
+    });
+
+    document.querySelector('.update--book')?.addEventListener('click', () => {
+        const searchStep = document.getElementById('update-search-step');
+        const updateForm = document.getElementById('form-update-book');
+        const initialClose = document.getElementById('update-initial-close');
+        const searchInputUpd = document.getElementById('update-book-search');
+
+        if (searchInputUpd) searchInputUpd.value = '';
+        if (searchStep) searchStep.style.display = 'flex';
+        if (updateForm) updateForm.style.display = 'none';
+        if (initialClose) initialClose.style.display = 'flex';
+
+        updateDialog?.showModal();
+    });
+
+    // Botones para cerrar cualquiera de los dialogs
+    document.querySelectorAll('[data-close-dialog]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+            const targetId = btn.getAttribute('data-close-dialog');
+            document.getElementById(targetId)?.close();
+        });
+    });
+
+    // --- ELIMINAR libro por código o nombre ---
+    const deleteForm = document.getElementById('form-delete-book');
+    deleteForm?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const query = document.getElementById('delete-book-query')?.value.trim();
+        if (!query) return;
+
+        if (!confirm(`¿Seguro que deseas eliminar el libro "${query}"? Esta acción no se puede deshacer.`)) return;
+
+        try {
+            const res = await fetch('http://localhost:3000/api/admin/books', {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ query })
+            });
+
+            const data = await res.json();
+            if (!res.ok) {
+                alert(data.error || 'No se pudo eliminar el libro.');
+                return;
+            }
+
+            alert(data.message);
+            deleteDialog?.close();
+            await loadCatalogBooks();
+        } catch (error) {
+            console.error('[CATALOG] Error al eliminar libro:', error);
+            alert('Error de conexión con el servidor.');
+        }
+    });
+
+    // --- ACTUALIZAR libro (Paso 1: Buscar por nombre) ---
+    const findUpdateBtn = document.getElementById('btn-find-update-book');
+    findUpdateBtn?.addEventListener('click', async () => {
+        const nameQuery = document.getElementById('update-book-search')?.value.trim();
+        if (!nameQuery) {
+            alert('Escribe el nombre del libro que deseas buscar.');
+            return;
+        }
+
+        try {
+            const res = await fetch(`http://localhost:3000/api/admin/books/by-name/${encodeURIComponent(nameQuery)}`);
+            const data = await res.json();
+
+            if (!res.ok) {
+                alert(data.error || 'Libro no encontrado.');
+                return;
+            }
+
+            document.getElementById('upd-cod-book').value = data.cod_book;
+            document.getElementById('upd-name-book').value = data.name_book || '';
+            document.getElementById('upd-author-book').value = data.author_book || '';
+            document.getElementById('upd-genre-book').value = data.genre_book || '';
+            document.getElementById('upd-publi-book').value = data.publi_book || '';
+            document.getElementById('upd-year-book').value = data.year_book ? String(data.year_book).split('T')[0] : '';
+            document.getElementById('upd-quantity').value = data.quantity ?? 0;
+            document.getElementById('upd-imgurl-book').value = data.imgurl_book || '';
+            document.getElementById('upd-fileurl-book').value = data.fileurl_book || '';
+            document.getElementById('upd-type-book').value = data.type_book || '';
+            document.getElementById('upd-sinopsis-book').value = data.sipnopsis_book || data.sinopsis_book || '';
+
+            document.getElementById('update-search-step').style.display = 'none';
+            document.getElementById('update-initial-close').style.display = 'none';
+            document.getElementById('form-update-book').style.display = 'flex';
+        } catch (error) {
+            console.error('[CATALOG] Error al buscar libro para actualizar:', error);
+            alert('Error de conexión con el servidor.');
+        }
+    });
+
+    // --- ACTUALIZAR libro (Paso 2: Guardar cambios) ---
+    const updateForm = document.getElementById('form-update-book');
+    updateForm?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const bookId = document.getElementById('upd-cod-book').value;
+
+        const payload = {
+            name_book: document.getElementById('upd-name-book').value.trim(),
+            author_book: document.getElementById('upd-author-book').value.trim(),
+            genre_book: document.getElementById('upd-genre-book').value.trim(),
+            publi_book: document.getElementById('upd-publi-book').value.trim(),
+            year_book: document.getElementById('upd-year-book').value.trim(),
+            quantity: document.getElementById('upd-quantity').value,
+            imgurl_book: document.getElementById('upd-imgurl-book').value.trim(),
+            fileurl_book: document.getElementById('upd-fileurl-book').value.trim(),
+            type_book: document.getElementById('upd-type-book').value.trim(),
+            sinopsis_book: document.getElementById('upd-sinopsis-book').value.trim()
+        };
+
+        try {
+            const res = await fetch(`http://localhost:3000/api/admin/books/${bookId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await res.json();
+            if (!res.ok) {
+                alert(data.error || 'No se pudo actualizar el libro.');
+                return;
+            }
+
+            alert(data.message);
+            updateDialog?.close();
+            await loadCatalogBooks();
+        } catch (error) {
+            console.error('[CATALOG] Error al guardar actualización del libro:', error);
+            alert('Error de conexión con el servidor.');
+        }
+    });
 });

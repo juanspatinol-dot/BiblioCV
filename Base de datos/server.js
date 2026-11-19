@@ -22,7 +22,7 @@ db.connect((err) => {
 });
 
 // ==========================================
-// RUTA DE REGISTRO (Actualizada con dirección)
+// RUTA DE REGISTRO
 // ==========================================
 app.post('/api/register', (req, res) => {
     const { idUser, name, nick, email, phone, birthDate, password, jornada, address, description } = req.body;
@@ -335,7 +335,6 @@ app.post('/api/loans', (req, res) => {
         return res.status(400).json({ error: 'ID de usuario o libro inválido.' });
     }
 
-    // 1. Verificar stock del libro
     const checkBookQuery = 'SELECT quantity, name_book FROM books WHERE cod_book = ?';
     db.query(checkBookQuery, [bid], (err, bookResults) => {
         if (err) {
@@ -351,7 +350,6 @@ app.post('/api/loans', (req, res) => {
             return res.status(400).json({ error: 'No hay stock disponible para este libro.' });
         }
 
-        // 2. Evitar que el mismo usuario pida el mismo libro si ya tiene una solicitud 'pending' o 'acepted'
         const checkLoanQuery = `
             SELECT ID_loan, type_loan 
             FROM loans 
@@ -370,7 +368,6 @@ app.post('/api/loans', (req, res) => {
                 });
             }
 
-            // 3. Insertar la solicitud en la tabla loans con estado 'pending'
             const insertLoanQuery = `
                 INSERT INTO loans (userid, bookid, type_loan) 
                 VALUES (?, ?, 'pending')
@@ -392,8 +389,7 @@ app.post('/api/loans', (req, res) => {
 });
 
 // ==========================================
-// RUTA PARA OBTENER PRÉSTAMOS DEL USUARIO (Para record.html)
-// (Va ANTES de /:userid/:bookid para evitar conflicto de rutas en Express)
+// RUTA PARA OBTENER PRÉSTAMOS DEL USUARIO
 // ==========================================
 app.get('/api/loans/user/:userid', (req, res) => {
     const uid = Number(req.params.userid);
@@ -432,7 +428,7 @@ app.get('/api/loans/user/:userid', (req, res) => {
 });
 
 // ==========================================
-// RUTA PARA VERIFICAR ESTADO DE PRÉSTAMO DE UN USUARIO EN UN LIBRO
+// RUTA PARA VERIFICAR ESTADO DE PRÉSTAMO EN UN LIBRO
 // ==========================================
 app.get('/api/loans/:userid/:bookid', (req, res) => {
     const uid = Number(req.params.userid);
@@ -465,10 +461,9 @@ app.get('/api/loans/:userid/:bookid', (req, res) => {
 });
 
 // ==========================================
-// RUTAS DE SUPERVISOR / ADMINISTRADOR
+// RUTAS DE SUPERVISOR / ADMINISTRADOR (PRÉSTAMOS)
 // ==========================================
 
-// 1. Listar todas las solicitudes pendientes con datos del usuario y del libro
 app.get('/api/admin/loans', (req, res) => {
     const query = `
         SELECT 
@@ -499,16 +494,14 @@ app.get('/api/admin/loans', (req, res) => {
     });
 });
 
-// 2. Aceptar o Rechazar una petición de préstamo
 app.put('/api/admin/loans/:id', (req, res) => {
     const loanId = Number(req.params.id);
-    const { status } = req.body; // 'acepted' o 'rejected'
+    const { status } = req.body;
 
     if (!loanId || !['acepted', 'rejected'].includes(status)) {
         return res.status(400).json({ error: 'Datos de actualización inválidos.' });
     }
 
-    // Si se rechaza, solo actualizamos el estado en loans
     if (status === 'rejected') {
         const rejectQuery = "UPDATE loans SET type_loan = 'rejected' WHERE ID_loan = ?";
         db.query(rejectQuery, [loanId], (err) => {
@@ -521,7 +514,6 @@ app.put('/api/admin/loans/:id', (req, res) => {
         return;
     }
 
-    // Si se acepta, primero verificamos que haya stock disponible del libro
     const checkQuery = `
         SELECT l.bookid, b.quantity 
         FROM loans l 
@@ -564,7 +556,6 @@ app.put('/api/admin/loans/:id', (req, res) => {
     });
 });
 
-// 3. Banear usuario y cancelar sus peticiones pendientes
 app.put('/api/admin/users/:userid/ban', (req, res) => {
     const uid = Number(req.params.userid);
 
@@ -587,6 +578,209 @@ app.put('/api/admin/users/:userid/ban', (req, res) => {
             }
 
             return res.status(200).json({ message: 'Usuario baneado y solicitudes pendientes canceladas.' });
+        });
+    });
+});
+
+// ==========================================
+// RUTAS CRUD DE LIBROS PARA ADMIN
+// ==========================================
+
+// Helper para convertir año (ej. "2020") a formato DATE válido en MySQL
+const formatBookDate = (rawYear) => {
+    const clean = rawYear ? String(rawYear).trim() : '';
+    if (clean.length === 4 && !Number.isNaN(Number(clean))) {
+        return `${clean}-01-01`;
+    }
+    if (/^\d{4}-\d{2}-\d{2}/.test(clean)) {
+        return clean.slice(0, 10);
+    }
+    return '2000-01-01';
+};
+
+// 1. Crear libro
+app.post('/api/admin/books', (req, res) => {
+    const {
+        name_book,
+        author_book,
+        genre_book,
+        publi_book,
+        year_book,
+        quantity,
+        imgurl_book,
+        fileurl_book,
+        type_book,
+        sinopsis_book
+    } = req.body;
+
+    if (!name_book || !author_book || !genre_book) {
+        return res.status(400).json({ error: 'Título, autor y género son obligatorios.' });
+    }
+
+    const formattedYear = formatBookDate(year_book);
+    const qty = Number(quantity) || 0;
+    const statusBook = qty > 0 ? 'available' : 'unavailable';
+
+    const sql = `
+        INSERT INTO books (
+            name_book, author_book, genre_book, year_book, publi_book, 
+            sipnosis_book, type_book, status_book, quantity, rate_book, imgurl_book, fileurl_book
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0.0, ?, ?)
+    `;
+
+    const params = [
+        name_book.trim(),
+        author_book.trim(),
+        genre_book.trim(),
+        formattedYear,
+        publi_book && publi_book.trim() !== '' ? publi_book.trim() : 'Sin editorial',
+        sinopsis_book && sinopsis_book.trim() !== '' ? sinopsis_book.trim() : 'Sin sinopsis disponible.',
+        type_book && type_book.trim() !== '' ? type_book.trim() : 'all',
+        statusBook,
+        qty,
+        imgurl_book && imgurl_book.trim() !== '' ? imgurl_book.trim() : '../Assets/Portadas/HarryPotter.jpg',
+        fileurl_book && fileurl_book.trim() !== '' ? fileurl_book.trim() : null
+    ];
+
+    db.query(sql, params, (err, result) => {
+        if (err) {
+            console.error('Error SQL al crear libro:', err);
+            return res.status(500).json({ error: `MySQL (${err.code}): ${err.sqlMessage}` });
+        }
+
+        res.status(201).json({
+            message: `Libro "${name_book.trim()}" creado con éxito (Código #${result.insertId}).`
+        });
+    });
+});
+
+// 2. Buscar libro por nombre para actualizar
+app.get('/api/admin/books/by-name/:name', (req, res) => {
+    const bookName = req.params.name.trim();
+
+    if (!bookName) {
+        return res.status(400).json({ error: 'Ingresa un nombre válido.' });
+    }
+
+    const sql = 'SELECT * FROM books WHERE LOWER(name_book) LIKE LOWER(?) LIMIT 1';
+    db.query(sql, [`%${bookName}%`], (err, results) => {
+        if (err) {
+            console.error('Error SQL al buscar libro por nombre:', err);
+            return res.status(500).json({ error: `MySQL (${err.code}): ${err.sqlMessage}` });
+        }
+
+        if (results.length === 0) {
+            return res.status(404).json({ error: 'No se encontró ningún libro con ese nombre.' });
+        }
+
+        res.status(200).json(results[0]);
+    });
+});
+
+// 3. Actualizar libro por su cod_book
+app.put('/api/admin/books/:id', (req, res) => {
+    const bookId = Number(req.params.id);
+    const {
+        name_book,
+        author_book,
+        genre_book,
+        publi_book,
+        year_book,
+        quantity,
+        imgurl_book,
+        fileurl_book,
+        type_book,
+        sinopsis_book
+    } = req.body;
+
+    if (!bookId || !name_book) {
+        return res.status(400).json({ error: 'Faltan datos obligatorios del libro.' });
+    }
+
+    const formattedYear = formatBookDate(year_book);
+    const qty = Number(quantity) || 0;
+    const statusBook = qty > 0 ? 'available' : 'unavailable';
+
+    const sql = `
+        UPDATE books 
+        SET name_book = ?, author_book = ?, genre_book = ?, publi_book = ?, 
+            year_book = ?, quantity = ?, status_book = ?, imgurl_book = ?, fileurl_book = ?, 
+            type_book = ?, sipnosis_book = ?
+        WHERE cod_book = ?
+    `;
+
+    const params = [
+        name_book.trim(),
+        author_book ? author_book.trim() : 'Autor desconocido',
+        genre_book ? genre_book.trim() : 'General',
+        publi_book ? publi_book.trim() : 'Sin editorial',
+        formattedYear,
+        qty,
+        statusBook,
+        imgurl_book ? imgurl_book.trim() : '../Assets/Portadas/HarryPotter.jpg',
+        fileurl_book ? fileurl_book.trim() : null,
+        type_book ? type_book.trim() : 'all',
+        sinopsis_book ? sinopsis_book.trim() : 'Sin sinopsis disponible.',
+        bookId
+    ];
+
+    db.query(sql, params, (err, result) => {
+        if (err) {
+            console.error('Error SQL al actualizar libro:', err);
+            return res.status(500).json({ error: `MySQL (${err.code}): ${err.sqlMessage}` });
+        }
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'No se encontró el libro a actualizar.' });
+        }
+
+        res.status(200).json({ message: 'Libro actualizado con éxito.' });
+    });
+});
+
+// 4. Eliminar libro por código o nombre (limpiando primero sus dependencias)
+app.delete('/api/admin/books', (req, res) => {
+    const queryValue = (req.body.query || '').trim();
+
+    if (!queryValue) {
+        return res.status(400).json({ error: 'Debes ingresar el código o nombre del libro.' });
+    }
+
+    const isNumeric = !Number.isNaN(Number(queryValue));
+    const findSql = isNumeric
+        ? 'SELECT cod_book, name_book FROM books WHERE cod_book = ? OR LOWER(name_book) = LOWER(?) LIMIT 1'
+        : 'SELECT cod_book, name_book FROM books WHERE LOWER(name_book) = LOWER(?) LIMIT 1';
+    const findParams = isNumeric ? [Number(queryValue), queryValue] : [queryValue];
+
+    db.query(findSql, findParams, (err, found) => {
+        if (err) {
+            console.error('Error SQL al buscar libro a eliminar:', err);
+            return res.status(500).json({ error: `MySQL (${err.code}): ${err.sqlMessage}` });
+        }
+
+        if (found.length === 0) {
+            return res.status(404).json({ error: 'No se encontró ningún libro con ese código o nombre.' });
+        }
+
+        const targetId = found[0].cod_book;
+        const targetName = found[0].name_book;
+
+        // Borrar interacciones y préstamos asociados para evitar error de llave foránea
+        db.query('DELETE FROM interaction WHERE bookid = ?', [targetId], (err) => {
+            if (err) console.error('Error limpiando interaction:', err);
+
+            db.query('DELETE FROM loans WHERE bookid = ?', [targetId], (err) => {
+                if (err) console.error('Error limpiando loans:', err);
+
+                db.query('DELETE FROM books WHERE cod_book = ?', [targetId], (err) => {
+                    if (err) {
+                        console.error('Error SQL al eliminar libro:', err);
+                        return res.status(500).json({ error: `MySQL (${err.code}): ${err.sqlMessage}` });
+                    }
+
+                    res.status(200).json({ message: `Libro "${targetName}" eliminado correctamente de BiblioCV.` });
+                });
+            });
         });
     });
 });
